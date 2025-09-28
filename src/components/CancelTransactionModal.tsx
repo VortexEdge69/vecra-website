@@ -3,10 +3,19 @@
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
+interface Transaction {
+    id: string;
+    plan_name: string;
+    amount: number;
+    utr: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    created_at: string;
+}
+
 interface CancelTransactionModalProps {
-  transaction: any;
+  transaction: Transaction;
   onClose: () => void;
-  onTransactionCancelled: (cancelledTransactionId: any) => void;
+  onTransactionCancelled: (cancelledTransactionId: string) => void;
 }
 
 const CancelTransactionModal: React.FC<CancelTransactionModalProps> = ({ transaction, onClose, onTransactionCancelled }) => {
@@ -29,9 +38,9 @@ const CancelTransactionModal: React.FC<CancelTransactionModalProps> = ({ transac
 
       onTransactionCancelled(transaction.id);
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       setError('Failed to cancel transaction. Please try again.');
-      console.error('Error cancelling transaction:', error.message);
+      console.error('Error cancelling transaction:', (error as Error).message);
     } finally {
       setIsCancelling(false);
     }

@@ -3,10 +3,19 @@
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
+interface Transaction {
+    id: string;
+    plan_name: string;
+    amount: number;
+    utr: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    created_at: string;
+}
+
 interface EditUtrModalProps {
-  transaction: any;
+  transaction: Transaction;
   onClose: () => void;
-  onUtrUpdated: (updatedTransaction: any) => void;
+  onUtrUpdated: (updatedTransaction: Transaction) => void;
 }
 
 const EditUtrModal: React.FC<EditUtrModalProps> = ({ transaction, onClose, onUtrUpdated }) => {
@@ -38,9 +47,9 @@ const EditUtrModal: React.FC<EditUtrModalProps> = ({ transaction, onClose, onUtr
         onUtrUpdated(data[0]);
         onClose();
       }
-    } catch (error: any) {
+    } catch (error) {
       setError('Failed to update UTR. Please try again.');
-      console.error('Error updating UTR:', error.message);
+      console.error('Error updating UTR:', (error as Error).message);
     } finally {
       setIsUpdating(false);
     }

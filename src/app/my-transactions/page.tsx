@@ -7,11 +7,20 @@ import Navbar from '@/components/Navbar';
 import EditUtrModal from '@/components/EditUtrModal';
 import CancelTransactionModal from '@/components/CancelTransactionModal';
 
+interface Transaction {
+    id: string;
+    plan_name: string;
+    amount: number;
+    utr: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    created_at: string;
+}
+
 const MyTransactionsPage = () => {
   const { user } = useUser();
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
@@ -44,21 +53,21 @@ const MyTransactionsPage = () => {
     fetchTransactions();
   }, [user]);
 
-  const handleEditUtr = (transaction: any) => {
+  const handleEditUtr = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsEditModalOpen(true);
   };
 
-  const handleCancelTransaction = (transaction: any) => {
+  const handleCancelTransaction = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsCancelModalOpen(true);
   };
 
-  const handleUtrUpdated = (updatedTransaction: any) => {
+  const handleUtrUpdated = (updatedTransaction: Transaction) => {
     setTransactions(transactions.map(t => t.id === updatedTransaction.id ? updatedTransaction : t));
   };
 
-  const handleTransactionCancelled = (cancelledTransactionId: any) => {
+  const handleTransactionCancelled = (cancelledTransactionId: string) => {
     setTransactions(transactions.filter(t => t.id !== cancelledTransactionId));
   };
 
