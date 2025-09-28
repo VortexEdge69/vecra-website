@@ -50,19 +50,16 @@ class EmailService {
 
     async sendPaymentNotification(paymentData: PaymentNotificationData): Promise<boolean> {
         const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-        const additionalEmail = process.env.ADDITIONAL_EMAIL; // kethavathrahul466@gmail.com
-        
+        const additionalEmails = process.env.ADDITIONAL_EMAIL?.split(',') || [];
+
         if (!adminEmail) {
             console.error('No admin email configured');
             return false;
         }
 
         // Prepare recipient list
-        const recipients = [adminEmail];
-        if (additionalEmail) {
-            recipients.push(additionalEmail);
-        }
-        
+        const recipients = [adminEmail, ...additionalEmails];
+
         const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
                 <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -124,19 +121,16 @@ class EmailService {
 
     async sendVpsNotification(customerEmail: string): Promise<boolean> {
         const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
-        const additionalEmail = process.env.ADDITIONAL_EMAIL; // kethavathrahul466@gmail.com
-        
+        const additionalEmails = process.env.ADDITIONAL_EMAIL?.split(',') || [];
+
         if (!adminEmail) {
             console.error('No admin email configured');
             return false;
         }
 
         // Prepare recipient list
-        const recipients = [adminEmail];
-        if (additionalEmail) {
-            recipients.push(additionalEmail);
-        }
-        
+        const recipients = [adminEmail, ...additionalEmails];
+
         const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
                 <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">

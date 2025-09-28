@@ -33,6 +33,24 @@ export default function Footer() {
                         Store
                     </a> */}
                     <a
+                        href="/terms-of-service"
+                        className="hover:text-accent transition-colors duration-200"
+                    >
+                        Terms of Service
+                    </a>
+                    <a
+                        href="/refund-and-cancellation-policy"
+                        className="hover:text-accent transition-colors duration-200"
+                    >
+                        Refund & Cancellation Policy
+                    </a>
+                    <a
+                        href="/privacy-policy"
+                        className="hover:text-accent transition-colors duration-200"
+                    >
+                        Privacy Policy
+                    </a>
+                    <a
                         href="https://dashboard.vecrahost.in"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -49,4 +67,4 @@ export default function Footer() {
             </div>
         </footer>
     );
-} 
+}

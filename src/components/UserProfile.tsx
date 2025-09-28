@@ -13,7 +13,7 @@ interface UserProfile {
 }
 
 export default function UserProfile() {
-    const { user: authUser, loading: authLoading } = useUser()
+    const { user: authUser, loading: authLoading, setUser } = useUser()
     const [profile, setProfile] = useState<UserProfile | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -66,6 +66,8 @@ export default function UserProfile() {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
+        setUser(null) // Clear user from context
+        window.location.href = '/' // Redirect to home page
     }
 
     if (authLoading || loading) {
@@ -110,4 +112,4 @@ export default function UserProfile() {
             </div>
         </motion.div>
     )
-} 
+}

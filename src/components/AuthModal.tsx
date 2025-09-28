@@ -6,6 +6,7 @@ import Notification from "./Notification"
 import { useUser } from "@/context/UserContext"
 import CountryCodeSelector from "./CountryCodeSelector"
 import { getDefaultCountry, formatPhoneNumber } from "@/lib/countryCodes"
+import logger from '../lib/logger';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
     isOpen: boolean
@@ -18,8 +19,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
     const [password, setPassword] = useState("")
     const [mobile, setMobile] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
+    const [agreedToTerms, setAgreedToTerms] = useState(false)
     const [selectedCountry, setSelectedCountry] = useState(getDefaultCountry())
     const [errorMsg, setErrorMsg] = useState("")
+    const [googleLoading, setGoogleLoading] = useState(false)
+    const [emailLoading, setEmailLoading] = useState(false)
+    const [showResendVerification, setShowResendVerification] = useState(false)
+    const [redirectPath, setRedirectPath] = useState("/")
     const [notification, setNotification] = useState<{
         message: string
         type: "success" | "error" | "info"
@@ -32,12 +38,15 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
 
     useEffect(() => {
         if (isOpen) {
+            setRedirectPath(window.location.pathname + window.location.search)
             setEmail("")
             setMobile("")
             setPassword("")
             setConfirmPassword("")
+            setAgreedToTerms(false)
             setSelectedCountry(getDefaultCountry())
             setErrorMsg("")
+            setShowResendVerification(false)
             setNotification(prev => ({ ...prev, isVisible: false }))
         }
     }, [isOpen])
@@ -68,201 +77,162 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
 
     const handleSignup = async () => {
         if (!email || !password || !confirmPassword || !mobile) {
-            setErrorMsg("Please fill in all fields.")
-            return
+            setErrorMsg("Please fill in all fields.");
+            return;
+        }
+
+        if (!agreedToTerms) {
+            setErrorMsg("You must agree to the Terms and Conditions.");
+            return;
         }
 
         if (!validateEmail(email)) {
-            setErrorMsg("Please enter a valid email.")
-            return
+            setErrorMsg("Please enter a valid email.");
+            return;
         }
 
         if (!validateMobile(mobile)) {
-            setErrorMsg(`Please enter a valid mobile number for ${selectedCountry.name}.`)
-            return
+            setErrorMsg(`Please enter a valid mobile number for ${selectedCountry.name}.`);
+            return;
         }
 
         if (password !== confirmPassword) {
-            setErrorMsg("Passwords do not match.")
-            return
+            setErrorMsg("Passwords do not match.");
+            return;
         }
 
         if (password.length < 6) {
-            setErrorMsg("Password must be at least 6 characters.")
-            return
+            setErrorMsg("Password must be at least 6 characters.");
+            return;
         }
 
-        // Use Supabase authentication
+        setEmailLoading(true);
         try {
-            console.log("Attempting signup with email:", email, "mobile:", mobile)
+            logger.log("Attempting signup with email:", email);
+            const fullMobileNumber = formatPhoneNumber(selectedCountry.dialCode, mobile);
+            const username = email.split('@')[0];
 
-            // First try signup without metadata to avoid database errors
+            // Only do the signup - let the trigger handle profile creation
             const { data, error } = await supabase.auth.signUp({
                 email,
-                password
-            })
-
-            console.log("Signup response:", { data, error })
+                password,
+                options: {
+                    data: {
+                        mobile: fullMobileNumber,
+                        country_code: selectedCountry.dialCode,
+                        username: username,
+                    }
+                }
+            });
 
             if (error) {
-                console.error("Signup error:", error)
-
-                // Provide more helpful error messages
-                if (error.message.includes("Database error")) {
-                    setErrorMsg("Database configuration issue. Please contact support or try again later.")
-                } else if (error.message.includes("already registered") || error.message.includes("User already registered")) {
-                    setErrorMsg("An account with this email already exists. Please try logging in instead.")
-                    // Automatically switch to login mode
-                    setMode("login")
-                    showNotification("Switched to login mode. Please enter your password.", "info")
-                } else if (error.message.includes("Invalid email")) {
-                    setErrorMsg("Please enter a valid email address.")
+                logger.error("Signup error:", error);
+                if (error.message.includes("already registered")) {
+                    setErrorMsg("An account with this email already exists. Please try logging in instead.");
+                    setMode("login");
                 } else {
-                    setErrorMsg(error.message)
+                    setErrorMsg(error.message);
                 }
-                return
+                return;
             }
 
-            // Check if email confirmation is required
+            // Handle UI feedback
             if (data.user && !data.session) {
-                showNotification("Please check your email for a confirmation link before signing in.", "info")
-                return
-            }
-
-            // If we have a session, user is automatically signed in
-            if (data.session && data.user) {
-                console.log("User created successfully:", data.user.email)
-
-                // Always update the user metadata with mobile number
-                try {
-                    const fullMobileNumber = formatPhoneNumber(selectedCountry.dialCode, mobile)
-                    const { error: updateError } = await supabase.auth.updateUser({
-                        data: {
-                            mobile: fullMobileNumber,
-                            countryCode: selectedCountry.dialCode,
-                            username: email.split('@')[0]
-                        }
-                    })
-
-                    if (updateError) {
-                        console.log("Failed to update user metadata:", updateError)
-                    } else {
-                        console.log("User metadata updated successfully")
-                    }
-
-                    // Always upsert the profile (robust fix)
-                    const { error: profileError } = await supabase
-                        .from('profiles')
-                        .upsert({
-                            id: data.user.id,
-                            email: data.user.email,
-                            mobile: fullMobileNumber,
-                            username: email.split('@')[0]
-                        })
-
-                    if (profileError) {
-                        console.error("Profile upsert error details:", profileError)
-                        if (profileError.code === '42501') {
-                            setErrorMsg("Permission denied. Please contact support to fix database permissions.")
-                        } else if (profileError.code === '23505') {
-                            setErrorMsg("Profile already exists. Please try logging in instead.")
-                        } else {
-                            setErrorMsg(`Failed to save mobile number: ${profileError.message}`)
-                        }
-                        return
-                    } else {
-                        console.log("Profile updated successfully")
-                    }
-                } catch (updateError) {
-                    setErrorMsg("Failed to save mobile number. Please contact support.")
-                    console.log("Error updating user metadata:", updateError)
-                    return
-                }
-
-                setUser(data.user)
-                showNotification("Account created successfully!")
-                onLoginSuccess()
-                onClose()
-            } else if (data.user) {
-                // If user is created but not logged in (email confirmation required), still upsert profile
-                try {
-                    const fullMobileNumber = formatPhoneNumber(selectedCountry.dialCode, mobile)
-                    const { error: profileError } = await supabase
-                        .from('profiles')
-                        .upsert({
-                            id: data.user.id,
-                            email: data.user.email,
-                            mobile: fullMobileNumber,
-                            username: email.split('@')[0]
-                        })
-                    if (profileError) {
-                        console.error("Profile upsert error details:", profileError)
-                        if (profileError.code === '42501') {
-                            setErrorMsg("Permission denied. Please contact support to fix database permissions.")
-                        } else if (profileError.code === '23505') {
-                            setErrorMsg("Profile already exists. Please try logging in instead.")
-                        } else {
-                            setErrorMsg(`Failed to save mobile number: ${profileError.message}`)
-                        }
-                        return
-                    } else {
-                        console.log("Profile updated successfully (pending email confirmation)")
-                    }
-                } catch (updateError) {
-                    setErrorMsg("Failed to save mobile number. Please contact support.")
-                    console.log("Error updating user metadata:", updateError)
-                    return
-                }
-                showNotification("Please check your email for a confirmation link before signing in.", "info")
-                return
+                showNotification("Please check your email for a confirmation link before signing in.", "info");
+                window.location.href = '/email-verification';
+            } else if (data.session) {
+                setUser(data.user);
+                showNotification("Account created successfully!");
+                onLoginSuccess();
+                onClose();
             }
         } catch (error) {
-            console.error("Unexpected signup error:", error)
-            setErrorMsg("An unexpected error occurred. Please try again.")
+            logger.error("Unexpected signup error:", error);
+            setErrorMsg("An unexpected error occurred. Please try again.");
+        } finally {
+            setEmailLoading(false);
         }
     }
 
     const handleLogin = async () => {
         if (!email || !password) {
-            setErrorMsg("Please fill in all fields.")
-            return
+            setErrorMsg("Please fill in all fields.");
+            return;
         }
 
         if (!validateEmail(email)) {
-            setErrorMsg("Please enter a valid email.")
-            return
+            setErrorMsg("Please enter a valid email.");
+            return;
         }
 
-        // Use Supabase authentication
+        setEmailLoading(true);
         try {
-            console.log("Attempting login with email:", email)
-
             const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
-            })
+            });
 
             if (error) {
-                console.error("Login error:", error)
-                setErrorMsg(error.message)
-                return
+                setErrorMsg(error.message);
+                if (error.message.includes("Email not confirmed")) {
+                    setShowResendVerification(true);
+                }
+                setEmailLoading(false);
+                return;
             }
 
-            console.log("Login successful, getting session")
-
-            // Get the current session to set the user
-            const { data: { session } } = await supabase.auth.getSession()
-            if (session?.user) {
-                console.log("Setting user in context:", session.user.email)
-                setUser(session.user)
-            }
-
-            showNotification("Logged in successfully!")
-            onLoginSuccess()
-            onClose()
+            // On successful login, redirect. The page will reload and pick up the new session.
+            window.location.href = redirectPath;
         } catch (error) {
-            console.error("Unexpected login error:", error)
-            setErrorMsg("An unexpected error occurred. Please try again.")
+            logger.error("Login error:", error);
+            setErrorMsg("An unexpected error occurred. Please try again.");
+            setEmailLoading(false);
+        }
+    }
+
+    const handleResendVerification = async () => {
+        if (!email) {
+            setErrorMsg("Please enter your email address first.");
+            return;
+        }
+
+        try {
+            const { error } = await supabase.auth.resend({
+                type: 'signup',
+                email: email,
+            });
+
+            if (error) {
+                setErrorMsg(error.message);
+            } else {
+                showNotification("A new verification email has been sent.", "success");
+                setShowResendVerification(false);
+            }
+        } catch (error) {
+            logger.error("Resend verification error:", error);
+            setErrorMsg("An unexpected error occurred. Please try again.");
+        }
+    };
+
+    const handleSignInWithGoogle = async () => {
+        setGoogleLoading(true);
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}${redirectPath}`,
+                },
+            });
+
+            if (error) {
+                logger.error("Google sign-in error:", error);
+                setErrorMsg(error.message);
+            }
+        } catch (error) {
+            logger.error("Unexpected Google sign-in error:", error);
+            setErrorMsg("An unexpected error occurred during Google sign-in.");
+        } finally {
+            setGoogleLoading(false);
         }
     }
 
@@ -278,7 +248,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
                         exit={{ opacity: 0 }}
                     >
                         <motion.div
-                            className="bg-white/5 border border-white/10 backdrop-blur-lg rounded-2xl p-6 w-full max-w-md mx-4 text-white shadow-xl"
+                            className="bg-white/5 border border-white/10 backdrop-blur-lg rounded-2xl p-6 w-full max-w-md mx-4 text-white shadow-xl max-h-[90vh] flex flex-col overflow-y-auto"
                             initial={{ scale: 0.95 }}
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.95 }}
@@ -347,11 +317,49 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
                                         placeholder="Confirm Password"
                                         className="w-full bg-white/10 p-3 rounded-lg border border-white/10 focus:outline-none text-white"
                                     />
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id="terms-agree"
+                                            checked={agreedToTerms}
+                                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                            className="rounded bg-white/10 border-white/20 text-accent focus:ring-accent"
+                                        />
+                                        <label htmlFor="terms-agree" className="text-sm text-gray-400">
+                                            I agree to the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Terms and Conditions</a>
+                                        </label>
+                                    </div>
                                     <button
                                         onClick={handleSignup}
-                                        className="w-full bg-accent hover:bg-[#005fcb] text-white py-3 rounded-lg font-semibold transition"
+                                        disabled={emailLoading}
+                                        className="w-full bg-accent hover:bg-[#005fcb] text-white py-3 rounded-lg font-semibold transition flex items-center justify-center"
                                     >
-                                        Create Account
+                                        {emailLoading ? (
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : "Create Account"}
+                                    </button>
+
+                                    <div className="my-4 flex items-center">
+                                        <div className="flex-grow border-t border-white/20"></div>
+                                        <span className="mx-4 text-sm text-gray-400">OR</span>
+                                        <div className="flex-grow border-t border-white/20"></div>
+                                    </div>
+
+                                    <button
+                                        onClick={handleSignInWithGoogle}
+                                        disabled={googleLoading}
+                                        className="w-full bg-white hover:bg-gray-200 text-black py-3 rounded-lg font-semibold transition flex items-center justify-center"
+                                    >
+                                        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.8 0-5.18-1.88-6.04-4.42H2.03v2.84C3.86 20.98 7.64 23 12 23z" fill="#34A853"/>
+                                            <path d="M5.96 14.05c-.23-.66-.36-1.36-.36-2.09s.13-1.43.36-2.09V7.03H2.03C1.37 8.41 1 10.14 1 12s.37 3.59 1.03 4.97l3.93-2.92z" fill="#FBBC05"/>
+                                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.64 1 3.86 3.02 2.03 6.29l3.93 2.92C6.82 7.26 9.2 5.38 12 5.38z" fill="#EA4335"/>
+                                        </svg>
+                                        {googleLoading ? "Signing in..." : "Sign up with Google"}
                                     </button>
                                 </div>
                             ) : (
@@ -372,9 +380,44 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
                                     />
                                     <button
                                         onClick={handleLogin}
-                                        className="w-full bg-accent hover:bg-[#005fcb] text-white py-3 rounded-lg font-semibold transition"
+                                        disabled={emailLoading}
+                                        className="w-full bg-accent hover:bg-[#005fcb] text-white py-3 rounded-lg font-semibold transition flex items-center justify-center"
                                     >
-                                        Login
+                                        {emailLoading ? (
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        ) : "Login"}
+                                    </button>
+
+                                    {showResendVerification && (
+                                        <button
+                                            onClick={handleResendVerification}
+                                            className="w-full mt-2 text-sm text-accent hover:underline"
+                                        >
+                                            Resend verification email
+                                        </button>
+                                    )}
+
+                                    <div className="my-4 flex items-center">
+                                        <div className="flex-grow border-t border-white/20"></div>
+                                        <span className="mx-4 text-sm text-gray-400">OR</span>
+                                        <div className="flex-grow border-t border-white/20"></div>
+                                    </div>
+
+                                    <button
+                                        onClick={handleSignInWithGoogle}
+                                        disabled={googleLoading}
+                                        className="w-full bg-white hover:bg-gray-100 text-black py-3 rounded-lg font-semibold transition flex items-center justify-center"
+                                    >
+                                        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.8 0-5.18-1.88-6.04-4.42H2.03v2.84C3.86 20.98 7.64 23 12 23z" fill="#34A853"/>
+                                            <path d="M5.96 14.05c-.23-.66-.36-1.36-.36-2.09s.13-1.43.36-2.09V7.03H2.03C1.37 8.41 1 10.14 1 12s.37 3.59 1.03 4.97l3.93-2.92z" fill="#FBBC05"/>
+                                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.64 1 3.86 3.02 2.03 6.29l3.93 2.92C6.82 7.26 9.2 5.38 12 5.38z" fill="#EA4335"/>
+                                        </svg>
+                                        {googleLoading ? "Signing in..." : "Sign in with Google"}
                                     </button>
                                 </div>
                             )}
@@ -392,4 +435,4 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: {
             />
         </>
     )
-} 
+}
