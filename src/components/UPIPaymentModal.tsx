@@ -75,6 +75,30 @@ export default function UPIPaymentModal({
             return
         }
 
+        // Check for existing pending transactions
+        try {
+            const { data: pendingTransactions, error: pendingError } = await supabase
+                .from('payments')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('status', 'PENDING');
+
+            if (pendingError) {
+                console.error('Error checking pending transactions:', pendingError);
+                setError("Could not verify your pending transactions. Please try again.");
+                return;
+            }
+
+            if (pendingTransactions && pendingTransactions.length > 0) {
+                setError("You have a pending transaction. Please wait for it to be processed, or cancel it from your transactions page.");
+                return;
+            }
+        } catch (error) {
+            console.error('Error during pending transaction check:', error);
+            setError("An unexpected error occurred while checking your transactions.");
+            return;
+        }
+
         setIsSubmitting(true)
         setError("")
 
@@ -180,6 +204,29 @@ export default function UPIPaymentModal({
         await copyToClipboard(totalAmount.toString())
     }
 
+    const renderError = () => {
+        if (!error) return null
+
+        const isPendingError = error.includes("pending transaction")
+
+        return (
+            <div className={`mt-4 text-center text-red-400 bg-red-900/20 border border-red-600/30 rounded-lg p-3 text-sm transition-all duration-300 ease-in-out`}>
+                <p>{error}</p>
+                {isPendingError && (
+                    <p className="mt-2">
+                        <a href="/my-transactions" className="underline hover:text-red-300 font-semibold">
+                            View My Transactions
+                        </a>
+                        <span className="mx-2 text-gray-400">or</span>
+                        <a href="mailto:support@vecrahost.in" className="underline hover:text-red-300 font-semibold">
+                            Contact Support
+                        </a>
+                    </p>
+                )}
+            </div>
+        )
+    }
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -274,7 +321,7 @@ export default function UPIPaymentModal({
                                                     />
                                                     <div className="flex items-center space-x-3">
                                                         <div className="w-8 h-8 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                                                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                                             </svg>
                                                         </div>
@@ -404,11 +451,7 @@ export default function UPIPaymentModal({
                                                             />
                                                         </div>
 
-                                                        {error && (
-                                                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm mb-4">
-                                                                {error}
-                                                            </div>
-                                                        )}
+                                                        {renderError()}
 
                                                         <button
                                                             onClick={submitPaymentConfirmation}

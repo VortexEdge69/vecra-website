@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useUser } from "@/context/UserContext";
 import { supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
 
 export default function Navbar() {
     const { user } = useUser();
@@ -75,6 +76,10 @@ export default function Navbar() {
                         </a> */}
                         {user ? (
                             <div className="flex items-center gap-3">
+                                 <Link href="/my-transactions" className="text-white hover:text-accent transition-colors duration-200 font-medium">
+
+                                My Transactions
+                                </Link>
                                 <span className="text-white text-sm">
                                     Hi, {user.email?.split('@')[0]}
                                 </span>
@@ -147,6 +152,9 @@ export default function Navbar() {
                         </a> */}
                         {user ? (
                             <>
+                                <Link href="/my-transactions" className="block text-white hover:text-accent transition-colors duration-200 font-medium py-2">
+                                My Transactions
+                                </Link>
                                 <div className="text-white text-sm py-2">
                                     Hi, {user.email?.split('@')[0]}
                                 </div>
@@ -172,4 +180,4 @@ export default function Navbar() {
             )}
         </>
     );
-} 
+}
