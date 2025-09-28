@@ -51,12 +51,12 @@ export default function Footer() {
                         Privacy Policy
                     </a>
                     <a
-                        href="https://dashboard.vecrahost.in"
+                        href="https://panel.vecrahost.in"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-accent transition-colors duration-200"
                     >
-                        Dashboard
+                        Panel
                     </a>
                 </div>
 
