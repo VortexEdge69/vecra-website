@@ -51,6 +51,12 @@ export default function Footer() {
                         Privacy Policy
                     </a>
                     <a
+                        href="/contactus"
+                        className="hover:text-accent transition-colors duration-200"
+                    >
+                        Contact Us
+                    </a>
+                    <a
                         href="https://panel.vecrahost.in"
                         target="_blank"
                         rel="noopener noreferrer"

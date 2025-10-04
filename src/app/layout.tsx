@@ -4,6 +4,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { UserProvider } from "@/context/UserContext";
+import ParallaxProvider from "@/components/ParallaxProvider";
 
 export const metadata: Metadata = {
   title: "VecraHost - Game. Host. Rule.",
@@ -19,8 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <body className="bg-black text-white font-sans antialiased">
         <UserProvider>
-          <Navbar />
-          {children}
+          <ParallaxProvider>
+            <Navbar />
+            {children}
+          </ParallaxProvider>
         </UserProvider>
       </body>
     </html>

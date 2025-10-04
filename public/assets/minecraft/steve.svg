@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Steve's head -->
+  <rect x="16" y="8" width="32" height="32" fill="#c68863" />
+  <!-- Hair -->
+  <rect x="16" y="8" width="32" height="8" fill="#3b3b3b" />
+  <!-- Eyes -->
+  <rect x="20" y="16" width="8" height="8" fill="#ffffff" />
+  <rect x="36" y="16" width="8" height="8" fill="#ffffff" />
+  <rect x="22" y="18" width="4" height="4" fill="#3b3b3b" />
+  <rect x="38" y="18" width="4" height="4" fill="#3b3b3b" />
+  <!-- Mouth -->
+  <rect x="24" y="28" width="16" height="4" fill="#5a4b42" />
+  <!-- Body -->
+  <rect x="16" y="40" width="32" height="16" fill="#3b5dc9" />
+  <!-- Arms -->
+  <rect x="8" y="40" width="8" height="16" fill="#3b5dc9" />
+  <rect x="48" y="40" width="8" height="16" fill="#3b5dc9" />
+  <!-- Legs -->
+  <rect x="16" y="56" width="12" height="8" fill="#7e511a" />
+  <rect x="36" y="56" width="12" height="8" fill="#7e511a" />
+</svg>
