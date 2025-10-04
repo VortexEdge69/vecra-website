@@ -4,7 +4,6 @@ import MinecraftParticles from "@/components/MinecraftParticles";
 import PricingCard from "@/components/PricingCard";
 import VpsNotification from "@/components/VpsNotification";
 import FeatureCard from "@/components/FeatureCard";
-import TestimonialCard from "@/components/TestimonialCard";
 import FAQItem from "@/components/FAQItem";
 import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -207,7 +206,7 @@ export default function Home() {
                 <th className="p-4 rounded-tl-lg font-bold">Feature</th>
                 <th className="p-4 text-blue-400 font-bold border-2 border-blue-500/30">
                   <div className="flex items-center">
-                    <img src="/assets/vecrahost-logo.svg" alt="VecraHost" className="h-6 mr-2" />
+                    <Image src="/assets/vecrahost-logo.svg" alt="VecraHost" width={24} height={24} className="h-6 mr-2" />
                     <span className="hidden md:inline">VecraHost</span>
                   </div>
                 </th>
@@ -679,7 +678,7 @@ export default function Home() {
               ))}
             </div>
             <p className="text-gray-300 flex-grow">
-              "VecraHost is the smoothest server I've ever played on. Zero lag and super fast support!"
+              &quot;VecraHost is the smoothest server I&apos;ve ever played on. Zero lag and super fast support!&quot;
             </p>
           </div>
 
@@ -701,7 +700,7 @@ export default function Home() {
               ))}
             </div>
             <p className="text-gray-300 flex-grow">
-              "I host my modded Minecraft server here — no downtime, and full SFTP access is gold!"
+              &quot;I host my modded Minecraft server here — no downtime, and full SFTP access is gold!&quot;
             </p>
           </div>
 
@@ -723,7 +722,7 @@ export default function Home() {
               ))}
             </div>
             <p className="text-gray-300 flex-grow">
-              "The control panel is simple and powerful. Setup took just minutes. Highly recommend Vecra!"
+              &quot;The control panel is simple and powerful. Setup took just minutes. Highly recommend Vecra!&quot;
             </p>
           </div>
         </div>

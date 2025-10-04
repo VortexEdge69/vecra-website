@@ -71,7 +71,7 @@ export default function FreeTrialPage() {
     return mobile.length >= 10
   }
 
-  const handleSignup = async (e) => {
+  const handleSignup = async (e: React.FormEvent) => {
     // Prevent default form submission
     if (e) e.preventDefault();
     
@@ -112,7 +112,7 @@ export default function FreeTrialPage() {
       const username = email.split('@')[0]
 
       // Check if user already exists
-      const { data: existingUser, error: existingUserError } = await supabase.auth.signInWithPassword({
+      const { data: existingUser } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -141,7 +141,7 @@ export default function FreeTrialPage() {
       }
 
       // New user, proceed with signup
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -190,7 +190,7 @@ export default function FreeTrialPage() {
       // In production, this would be replaced with actual OTP verification
       
       // Create free trial entry
-      const { data: trialData, error: trialError } = await supabase
+      const { error: trialError } = await supabase
         .from('free_trials')
         .insert({
           user_id: user?.id,
@@ -364,7 +364,7 @@ export default function FreeTrialPage() {
                   <div className="flex gap-2">
                     <CountryCodeSelector
                       selectedCountry={selectedCountry}
-                      setSelectedCountry={setSelectedCountry}
+                      onCountryChange={setSelectedCountry}
                     />
                     <input
                       id="mobile"

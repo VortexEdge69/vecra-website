@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 import logger from '@/lib/logger'
-import { sendEmail } from '@/lib/emailService'
+import { emailService } from '@/lib/emailService'
 
 export async function POST(request: Request) {
   try {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     // Create server using ctrlpanel.gg API
     // This is a placeholder - you'll need to implement the actual API call
-    const serverId = await createServerOnCtrlPanel(email)
+    const serverId = await createServerOnCtrlPanel()
     
     if (!serverId) {
       return NextResponse.json(
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const expiresAt = new Date()
     expiresAt.setHours(expiresAt.getHours() + 24) // 24 hours from now
 
-    const { data: trial, error: trialError } = await supabase
+    const { error: trialError } = await supabase
       .from('free_trials')
       .insert({
         user_id: userId,
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 
 // Function to create server on ctrlpanel.gg
 // This is a placeholder - implement the actual API integration
-async function createServerOnCtrlPanel(email: string): Promise<string | null> {
+async function createServerOnCtrlPanel(): Promise<string | null> {
   try {
     // TODO: Replace with actual API call to ctrlpanel.gg
     // Example implementation:
@@ -128,7 +128,7 @@ async function sendAdminNotification(email: string, phoneNumber: string, serverI
   try {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@vecrahost.in'
     
-    await sendEmail({
+    await emailService.sendEmail({
       to: adminEmail,
       subject: 'New Free Trial Server Created',
       text: `
