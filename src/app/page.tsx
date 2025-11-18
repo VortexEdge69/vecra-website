@@ -1,14 +1,19 @@
 "use client";
+import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import MinecraftParticles from "@/components/MinecraftParticles";
 import PricingCard from "@/components/PricingCard";
 import VpsNotification from "@/components/VpsNotification";
+import PricingTabs from "@/components/PricingTabs";
+import VpsPricingCard from "@/components/VpsPricingCard";
 import FeatureCard from "@/components/FeatureCard";
 import FAQItem from "@/components/FAQItem";
 import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { StarterIcon, UltraIcon, VpsStarterIcon, VpsProIcon, VpsUltraIcon } from "@/components/MinecraftIcons";
 import { LightningBoltIcon, TerminalIcon, ShieldCheckIcon, GamepadIcon } from "@/components/FeatureIcons";
+import { DISCORD_INVITE_LINK } from "@/lib/discord";
 
 export default function Home() {
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, targetId: string) => {
@@ -20,12 +25,96 @@ export default function Home() {
   };
 
   const handleVpsNotification = (email: string) => {
-    // Here you can add logic to store the email for later contact
-    console.log("VPS notification requested for:", email);
+    console.log('VPS notification requested for email:', email);
+    // This function is called when a user requests VPS notification
+    // The actual email sending is handled by the API route
   };
+
+  // VPS pricing duration selection
+  const [selectedDuration, setSelectedDuration] = useState<"monthly" | "yearly" | "twoYear">("twoYear");
+
+  // VPS Plans Configuration
+  const vpsPlans = [
+    {
+      id: "vps-starter",
+      name: "VPS Starter",
+      specs: {
+        cpu: "1 vCPU Core",
+        ram: "2 GB RAM",
+        storage: "25 GB SSD",
+        bandwidth: "1 TB Bandwidth",
+        ip: "1 IPv4 Address",
+        support: "24/7 Support"
+      },
+      monthlyPrice: 399,
+      yearlyPrice: 3830, // ₹319/mo equivalent
+      twoYearPrice: 7176, // ₹299/mo equivalent
+      isOutOfStock: false,
+      isBestValue: false,
+      icon: <VpsStarterIcon />
+    },
+    {
+      id: "vps-basic",
+      name: "VPS Basic",
+      specs: {
+        cpu: "2 vCPU Cores",
+        ram: "4 GB RAM",
+        storage: "50 GB SSD",
+        bandwidth: "2 TB Bandwidth",
+        ip: "1 IPv4 Address",
+        support: "Priority Support"
+      },
+      monthlyPrice: 699,
+      yearlyPrice: 6708, // ₹559/mo equivalent
+      twoYearPrice: 12576, // ₹524/mo equivalent
+      isOutOfStock: false,
+      isBestValue: false,
+      icon: <VpsProIcon />
+    },
+    {
+      id: "vps-pro",
+      name: "VPS Pro",
+      specs: {
+        cpu: "4 vCPU Cores",
+        ram: "8 GB RAM",
+        storage: "100 GB SSD",
+        bandwidth: "4 TB Bandwidth",
+        ip: "2 IPv4 Addresses",
+        support: "Premium Support"
+      },
+      monthlyPrice: 999,
+      yearlyPrice: 9588, // ₹799/mo equivalent
+      twoYearPrice: 17976, // ₹749/mo equivalent
+      isOutOfStock: false,
+      isBestValue: true,
+      icon: <VpsUltraIcon />
+    },
+    {
+      id: "vps-enterprise",
+      name: "VPS Enterprise",
+      specs: {
+        cpu: "8 vCPU Cores",
+        ram: "16 GB RAM",
+        storage: "200 GB SSD",
+        bandwidth: "8 TB Bandwidth",
+        ip: "3 IPv4 Addresses",
+        support: "24/7 Dedicated Support"
+      },
+      monthlyPrice: 1499,
+      yearlyPrice: 14388, // ₹1199/mo equivalent
+      twoYearPrice: 26976, // ₹1124/mo equivalent
+      isOutOfStock: false,
+      isBestValue: false,
+      icon: <VpsUltraIcon />
+    }
+  ];
+
+  // Check if all plans are out of stock
+  const allPlansOutOfStock = vpsPlans.every(plan => plan.isOutOfStock);
 
   return (
     <>
+
       {/* Compact Announcement Banner - Between navbar and hero */}
       <div className="pt-16 md:pt-20">
         <AnnouncementBanner />
@@ -141,7 +230,7 @@ export default function Home() {
               Try VecraHost For Free
             </h2>
             <p className="text-xl text-gray-300">
-              Get a 1GB RAM Minecraft server free for 3 days. No strings attached.
+              Get a Minecraft server free for 24 hours. No strings attached.
             </p>
             
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 space-y-4">
@@ -150,7 +239,7 @@ export default function Home() {
                   <svg className="text-green-400 w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-lg">1GB RAM Server</span>
+                  <span className="text-lg">Indian Node</span>
                 </li>
                 <li className="flex items-center">
                   <svg className="text-green-400 w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -175,12 +264,12 @@ export default function Home() {
             
             <div className="flex-shrink-0">
               <a
-                href="https://panel.vecrahost.in/register"
+                href={DISCORD_INVITE_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-8 py-4 bg-green-600 text-white text-xl font-bold rounded-xl shadow-lg hover:bg-green-700 transition duration-300"
               >
-                Start Your Free Trial
+                Join our Discord server
               </a>
             </div>
           </div>
@@ -283,24 +372,24 @@ export default function Home() {
           />
         </div>
         
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 relative z-10">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
           Minecraft Hosting Plans
         </h2>
         <p className="text-center text-gray-400 mb-12 max-w-2xl relative z-10">
           Choose a plan that fits your server&apos;s power needs. All plans come with DDoS protection and instant setup.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
           <PricingCard
             id="mc-starter"
             type="minecraft"
             title="Starter"
             price="₹149/mo"
             features={[
-              "1 GB RAM",
-              "10 player slots",
+              "2 GB RAM",
+              "1 vCPU",
               "SSD Storage",
-              "Full SFTP Access",
+              "Perfect for small servers or friends",
               "24/7 Support",
               "Instant Setup"
             ]}
@@ -309,21 +398,48 @@ export default function Home() {
           />
 
           <PricingCard
-            id="mc-ultra"
+            id="mc-pro"
             type="minecraft"
-            title="Ultra"
-            price="₹349/mo"
+            title="Pro"
+            price="₹249/mo"
             features={[
-              "3 GB RAM",
-              "Unlimited slots",
-              "Advanced Mods",
-              "Premium Support",
-              "Custom Domain",
-              "API Access"
+              "4 GB RAM",
+              "2 vCPU",
+              "SSD Storage",
+              "For growing survival or SMP servers",
+              "24/7 Support",
+              "Instant Setup"
+            ]}
+            highlighted={false}
+          />
+
+          <PricingCard
+            id="mc-elite"
+            type="minecraft"
+            title="Elite"
+            price="₹399/mo"
+            features={[
+              "8 GB RAM",
+              "4 vCPU",
+              "SSD/NVMe Storage",
+              "Ideal for modded or public servers",
+              "24/7 Support",
+              "Instant Setup"
             ]}
             highlighted={false}
             icon={<UltraIcon />}
           />
+        </div>
+        <div className="mt-6 w-full flex justify-center">
+          <div className="justify-self-center self-start w-fit inline-flex flex-col bg-accent/10 border border-accent/40 rounded-xl p-4">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-1">Didn’t find a plan that fits?</h3>
+              <p className="text-lg md:text-2xl text-gray-200">We’ll tailor a custom Minecraft plan to your needs.</p>
+            </div>
+            <Link href="/custom-plan?type=minecraft" className="mt-3 inline-flex items-center justify-center text-center px-5 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:bg-[#005fcb] transition-colors">
+              Request Custom Plan
+            </Link>
+          </div>
         </div>
 
         <div className="mt-8 flex items-center justify-center">
@@ -336,9 +452,8 @@ export default function Home() {
         </div>
 
         <a
-          href="https://panel.vecrahost.in"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#vps-hosting"
+          onClick={(e) => handleSmoothScroll(e, "vps-hosting")}
           className="mt-12 inline-block px-6 py-3 bg-accent text-white font-semibold rounded-xl shadow-md hover:bg-[#005fcb] transition-colors duration-200"
         >
           Go to Minecraft Panel
@@ -356,179 +471,101 @@ export default function Home() {
         <p className="text-center text-gray-400 mb-12 max-w-2xl">
           Scalable virtual servers with full control, built for power users and projects that demand performance.
         </p>
+        {/* Duration selector when plans are available */}
+        {!allPlansOutOfStock && (
+          <PricingTabs selectedDuration={selectedDuration} onDurationChange={setSelectedDuration} />
+        )}
 
-        {/* VPS Notification */}
-        <VpsNotification onNotify={handleVpsNotification} />
+        {/* Show notification when all plans are out of stock */}
+        {allPlansOutOfStock && (
+          <VpsNotification onNotify={handleVpsNotification} />
+        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl w-full opacity-50">
-          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl p-6 flex flex-col justify-between h-full">
-            <div className="space-y-4">
-              <div className="text-accent text-4xl">
-                <VpsStarterIcon />
-              </div>
-              <h3 className="text-2xl font-semibold">VPS Starter</h3>
-              <p className="text-4xl font-bold text-accent">₹399/mo</p>
-              <ul className="text-sm text-gray-300 space-y-2">
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  1 vCPU Core
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  2 GB RAM
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  25 GB SSD
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  1 IPv4 Address
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Root Access
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  24/7 Support
-                </li>
-              </ul>
-            </div>
-            <div className="mt-6">
-              <button
-                disabled
-                className="block text-center w-full py-3 px-4 bg-gray-600 text-gray-400 font-semibold rounded-lg cursor-not-allowed"
-              >
-                Out of Stock
-              </button>
-            </div>
-          </div>
+        {/* VPS pricing: unified list for mobile/tablet; centered remainder on desktop */}
+        {(() => {
+          const items = [
+            ...vpsPlans.map((plan) => ({ type: "plan" as const, plan })),
+            { type: "cta" as const },
+          ]
 
-          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl p-6 flex flex-col justify-between h-full">
-            <div className="space-y-4">
-              <div className="text-accent text-4xl">
-                <VpsProIcon />
-              </div>
-              <h3 className="text-2xl font-semibold">VPS Pro</h3>
-              <p className="text-4xl font-bold text-accent">₹699/mo</p>
-              <ul className="text-sm text-gray-300 space-y-2">
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  2 vCPU Cores
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  4 GB RAM
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  50 GB SSD
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  DDoS Protection
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Web Terminal Access
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Priority Support
-                </li>
-              </ul>
+          // Mobile/tablet: single continuous grid
+          const mobileList = (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:hidden max-w-7xl w-full">
+              {items.map((item, idx) => (
+                item.type === "plan" ? (
+                  <VpsPricingCard key={item.plan.id} plan={item.plan} selectedDuration={selectedDuration} />
+                ) : (
+                  <div key={`cta-m-${idx}`} className="justify-self-center self-start w-fit inline-flex flex-col bg-accent/10 border border-accent/40 rounded-xl p-4">
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-1">Didn’t find a plan that fits?</h3>
+                      <p className="text-lg md:text-2xl text-gray-200">We’ll tailor a custom VPS plan to your needs.</p>
+                    </div>
+                    <Link href="/custom-plan?type=vps" className="mt-3 inline-flex items-center justify-center text-center px-5 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:bg-[#005fcb] transition-colors">
+                      Request Custom Plan
+                    </Link>
+                  </div>
+                )
+              ))}
             </div>
-            <div className="mt-6">
-              <button
-                disabled
-                className="block text-center w-full py-3 px-4 bg-gray-600 text-gray-400 font-semibold rounded-lg cursor-not-allowed"
-              >
-                Out of Stock
-              </button>
-            </div>
-          </div>
+          )
 
-          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl p-6 flex flex-col justify-between h-full">
-            <div className="space-y-4">
-              <div className="text-accent text-4xl">
-                <VpsUltraIcon />
-              </div>
-              <h3 className="text-2xl font-semibold">VPS Ultra</h3>
-              <p className="text-4xl font-bold text-accent">₹999/mo</p>
-              <ul className="text-sm text-gray-300 space-y-2">
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  4 vCPU Cores
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  8 GB RAM
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  100 GB SSD
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Dedicated Resources
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  Premium Support
-                </li>
-                <li className="flex items-center">
-                  <svg className="text-green-400 w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  API Access
-                </li>
-              </ul>
+          // Desktop: 3-column rows with centered last remainder row
+          const fullRowsCount = Math.floor(items.length / 3)
+          const remainder = items.length % 3
+          const fullRowsItems = items.slice(0, fullRowsCount * 3)
+          const lastRowItems = items.slice(fullRowsCount * 3)
+
+          const desktopList = (
+            <div className="hidden lg:block w-full max-w-7xl">
+              {fullRowsCount > 0 && (
+                <div className="grid grid-cols-3 gap-8">
+                  {fullRowsItems.map((item, idx) => (
+                    item.type === "plan" ? (
+                      <VpsPricingCard key={item.plan.id} plan={item.plan} selectedDuration={selectedDuration} />
+                    ) : (
+                      <div key={`cta-${idx}`} className="justify-self-center self-start w-fit inline-flex flex-col bg-accent/10 border border-accent/40 rounded-xl p-4">
+                        <div>
+                          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-1">Didn’t find a plan that fits?</h3>
+                          <p className="text-lg md:text-2xl text-gray-200">We’ll tailor a custom VPS plan to your needs.</p>
+                        </div>
+                        <Link href="/custom-plan?type=vps" className="mt-3 inline-flex items-center justify-center text-center px-5 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:bg-[#005fcb] transition-colors">
+                          Request Custom Plan
+                        </Link>
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
+
+              {remainder > 0 && (
+                <div className={`grid gap-8 ${remainder === 1 ? "grid-cols-1" : "grid-cols-2"} w-fit mx-auto mt-8`}>
+                  {lastRowItems.map((item, idx) => (
+                    item.type === "plan" ? (
+                      <VpsPricingCard key={item.plan.id} plan={item.plan} selectedDuration={selectedDuration} />
+                    ) : (
+                      <div key={`cta-last-${idx}`} className="justify-self-center self-start w-fit inline-flex flex-col bg-accent/10 border border-accent/40 rounded-xl p-4">
+                        <div>
+                          <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-1">Didn’t find a plan that fits?</h3>
+                          <p className="text-lg md:text-2xl text-gray-200">We’ll tailor a custom VPS plan to your needs.</p>
+                        </div>
+                        <Link href="/custom-plan?type=vps" className="mt-3 inline-flex items-center justify-center text-center px-5 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:bg-[#005fcb] transition-colors">
+                          Request Custom Plan
+                        </Link>
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="mt-6">
-              <button
-                disabled
-                className="block text-center w-full py-3 px-4 bg-gray-600 text-gray-400 font-semibold rounded-lg cursor-not-allowed"
-              >
-                Out of Stock
-              </button>
-            </div>
-          </div>
-        </div>
+          )
+
+          return (
+            <>
+              {mobileList}
+              {desktopList}
+            </>
+          )
+        })()}
 
         <a
           href="#vps-hosting"
@@ -753,17 +790,15 @@ export default function Home() {
               Connect with other players, get support, and stay updated on the latest news and events. Our Discord server is the perfect place to find teammates and share your gaming experiences.
             </p>
             <a
-              href="https://discord.gg/vecrahost"
+              href={DISCORD_INVITE_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
+              className="inline-block px-6 py-3 bg-accent text-white font-semibold rounded-xl shadow-md hover:bg-[#005fcb] transition-colors duration-200"
             >
-              <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
-              </svg>
-              Join Discord
+              Join our Discord server to get your server
             </a>
           </div>
+
           <div className="flex-1 flex justify-center md:justify-end">
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 max-w-xs">
               <div className="flex items-center mb-4">

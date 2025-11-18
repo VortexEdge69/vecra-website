@@ -7,9 +7,11 @@ import { UserProvider } from "@/context/UserContext";
 import ParallaxProvider from "@/components/ParallaxProvider";
 
 export const metadata: Metadata = {
-  title: "VecraHost - Game. Host. Rule.",
+  title: "VecraHost - Best Minecraft Server Hosting India | VPS Hosting | Game. Host. Rule.",
   description:
-    "VecraHost offers high-performance Minecraft and VPS hosting with a modern gaming aesthetic.",
+    "VecraHost offers high-performance Minecraft and VPS hosting in India. Best Minecraft server hosting with DDoS protection, instant setup, and gamer-friendly features.",
+  keywords:
+    "vecrahost, minecraft server hosting india, best minecraft hosting, vps hosting india, game server hosting, affordable minecraft hosting, ddos protection minecraft, instant setup minecraft server, premium vps india, crossplay minecraft bedrock java",
   icons: {
     icon: "/favicon.ico",
   },

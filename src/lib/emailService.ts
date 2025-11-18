@@ -177,6 +177,78 @@ class EmailService {
             html: html,
         });
     }
+
+    async sendCustomPlanRequest(type: 'minecraft' | 'vps', customerEmail: string, specs: Record<string, string>): Promise<boolean> {
+        const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+        const additionalEmails = process.env.ADDITIONAL_EMAIL?.split(',') || [];
+
+        if (!adminEmail) {
+            console.error('No admin email configured');
+            return false;
+        }
+
+        const recipients = [adminEmail, ...additionalEmails];
+        const planLabel = type === 'minecraft' ? 'Minecraft' : 'VPS';
+
+        const specsRows = Object.entries(specs)
+            .filter(([, val]) => (val ?? '').toString().trim().length > 0)
+            .map(([key, val]) => `
+                <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #555; text-transform: capitalize;">${key.replace(/([A-Z])/g, ' $1').trim()}</td>
+                    <td style="padding: 8px 0; color: #333;">${val}</td>
+                </tr>
+            `)
+            .join('');
+
+        const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
+                <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #0076fe; margin: 0;">🛠️ Custom ${planLabel} Plan Request</h1>
+                    </div>
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h2 style="color: #333; margin-top: 0;">Customer Details</h2>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold; color: #555;">Email:</td>
+                                <td style="padding: 8px 0; color: #333;">${customerEmail}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold; color: #555;">Requested At:</td>
+                                <td style="padding: 8px 0; color: #333;">${new Date().toLocaleString('en-IN', {
+                                    timeZone: 'Asia/Kolkata',
+                                    dateStyle: 'full',
+                                    timeStyle: 'medium'
+                                })}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="background-color: #e3f2fd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h2 style="color: #333; margin-top: 0;">Requested Specifications</h2>
+                        <table style="width: 100%; border-collapse: collapse;">
+                            ${specsRows || '<tr><td style="color:#777">No specific specs provided</td></tr>'}
+                        </table>
+                    </div>
+                    <div style="background-color: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <p style="margin: 0; color: #856404;">
+                            <strong>Action Required:</strong> Please review the custom request and follow up with the customer.
+                        </p>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <p style="color: #666; font-size: 14px; margin: 0;">
+                            This notification was sent from VecraHost Custom Plan Request System
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return await this.sendEmail({
+            to: recipients.join(', '),
+            subject: `🛠️ Custom ${planLabel} Request: ${customerEmail}`,
+            html,
+        });
+    }
 }
 
 export const emailService = new EmailService();
