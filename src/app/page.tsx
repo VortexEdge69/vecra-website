@@ -66,7 +66,7 @@ export default function Home() {
       },
       monthlyPrice: 699,
       yearlyPrice: 6708, // ₹559/mo equivalent
-      twoYearPrice: 12576, // ₹524/mo equivalent
+      twoYearPrice: 11976, // ₹499/mo equivalent
       isOutOfStock: false,
       isBestValue: false,
       icon: <VpsProIcon />
@@ -82,7 +82,7 @@ export default function Home() {
         ip: "2 IPv4 Addresses",
         support: "Premium Support"
       },
-      monthlyPrice: 999,
+      monthlyPrice: 949,
       yearlyPrice: 9588, // ₹799/mo equivalent
       twoYearPrice: 17976, // ₹749/mo equivalent
       isOutOfStock: false,
@@ -100,7 +100,7 @@ export default function Home() {
         ip: "3 IPv4 Addresses",
         support: "24/7 Dedicated Support"
       },
-      monthlyPrice: 1499,
+      monthlyPrice: 1399,
       yearlyPrice: 14388, // ₹1199/mo equivalent
       twoYearPrice: 26976, // ₹1124/mo equivalent
       isOutOfStock: false,
@@ -857,8 +857,8 @@ export default function Home() {
             answer="Yes, you can upgrade or downgrade your plan anytime from your control panel."
           />
           <FAQItem
-            question="Where do I access my Minecraft or VPS panel?"
-            answer="Use the &apos;Go to Panel&apos; buttons above, or visit panel.vecrahost.in for Minecraft and dashboard.vecrahost.in for users."
+            question="Where do I access my Minecraft?"
+            answer="Use the &apos;Go to Panel&apos; buttons above, or visit panel.vecrahost.in for Minecraft"
           />
         </div>
       </section>

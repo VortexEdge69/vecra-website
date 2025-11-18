@@ -5,8 +5,13 @@ import { useRouter } from "next/navigation";
 export default function AnnouncementBanner() {
   const router = useRouter();
 
-  const handleCheckoutClick = () => {
-    router.push("/checkout?plan=mc-10-day");
+  const handleScrollToVps = () => {
+    const el = document.getElementById('vps-hosting');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      router.push('/#vps-hosting');
+    }
   };
 
   return (
@@ -29,17 +34,17 @@ export default function AnnouncementBanner() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-center sm:text-left">
             <span className="font-bold text-sm sm:text-lg">NEW!</span>
             <span className="text-xs sm:text-sm md:text-base">
-              Try our <span className="font-semibold">10-Day Minecraft Server Plan</span> for just ₹69
+              Check out our Updated VPS prices below
             </span>
           </div>
         </div>
         
         <div className="flex items-center space-x-2 sm:space-x-3">
           <button
-            onClick={handleCheckoutClick}
+            onClick={handleScrollToVps}
             className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold transition-all duration-200 hover:scale-105 flex items-center space-x-1 sm:space-x-2"
           >
-            <span>Get Started</span>
+            <span>View VPS Prices</span>
             <svg 
               className="w-3 h-3 sm:w-4 sm:h-4" 
               fill="none" 
