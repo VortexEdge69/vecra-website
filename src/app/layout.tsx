@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { UserProvider } from "@/context/UserContext";
 import ParallaxProvider from "@/components/ParallaxProvider";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "VecraHost - Best Minecraft Server Hosting India | VPS Hosting | Game. Host. Rule.",
@@ -27,6 +28,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </ParallaxProvider>
         </UserProvider>
+        <Script
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          strategy="afterInteractive"
+          data-cf-beacon='{"token":"4c8e303a01e34669a718349d28fca84d"}'
+        />
       </body>
     </html>
   );
