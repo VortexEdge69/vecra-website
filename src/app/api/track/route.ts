@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     } finally {
       if (connection) connection.release();
     }
-  } catch (err) {
+  } catch {
     return NextResponse.json({ message: 'Invalid JSON' }, { status: 400 });
   }
 }

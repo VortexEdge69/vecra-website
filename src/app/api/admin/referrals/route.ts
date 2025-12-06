@@ -16,9 +16,9 @@ export async function GET(request: NextRequest) {
     const whereClicks: string[] = [];
     const whereConvs: string[] = [];
     const whereUtm: string[] = ['utm IS NOT NULL'];
-    const paramsClicks: any[] = [];
-    const paramsConvs: any[] = [];
-    const paramsUtm: any[] = [];
+    const paramsClicks: (string | number)[] = [];
+    const paramsConvs: (string | number)[] = [];
+    const paramsUtm: (string | number)[] = [];
 
     if (refFilter) {
       whereClicks.push('ref = ?');
