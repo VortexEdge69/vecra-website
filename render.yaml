@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: vecra-website
+    env: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        fromSecret: NEXT_PUBLIC_SUPABASE_URL
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        fromSecret: NEXT_PUBLIC_SUPABASE_ANON_KEY
+      - key: NEXT_PUBLIC_ADMIN_EMAIL
+        fromSecret: NEXT_PUBLIC_ADMIN_EMAIL
+      - key: EMAIL_USER
+        fromSecret: EMAIL_USER
+      - key: EMAIL_APP_PASSWORD
+        fromSecret: EMAIL_APP_PASSWORD
+      - key: ADMIN_PASSWORD
+        fromSecret: ADMIN_PASSWORD
+      - key: ADDITIONAL_EMAIL
+        fromSecret: ADDITIONAL_EMAIL
+      - key: DB_HOST
+        fromSecret: DB_HOST
+      - key: DB_PORT
+        fromSecret: DB_PORT
+      - key: DB_USER
+        fromSecret: DB_USER
+      - key: DB_PASSWORD
+        fromSecret: DB_PASSWORD
+      - key: DB_NAME
+        fromSecret: DB_NAME
