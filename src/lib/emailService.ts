@@ -19,21 +19,26 @@ class EmailService {
     private createTransporter() {
         const emailUser = process.env.EMAIL_USER;
         const emailPassword = process.env.EMAIL_APP_PASSWORD;
+        const emailHost = process.env.EMAIL_HOST || 'smtp.zoho.in';
+        const emailPort = parseInt(process.env.EMAIL_PORT || '465');
+        const isSecure = process.env.EMAIL_SECURE !== 'false' && emailPort === 465;
 
         if (!emailUser || !emailPassword) {
             throw new Error('Email credentials not configured in environment variables');
         }
 
+        console.log(`📡 Attempting to connect to SMTP: ${emailHost}:${emailPort} (Secure: ${isSecure})`);
+
         return nodemailer.createTransport({
-            host: 'smtp.zoho.com',
-            port: 587,
-            secure: false,
+            host: emailHost,
+            port: emailPort,
+            secure: isSecure,
             auth: {
                 user: emailUser,
                 pass: emailPassword,
             },
             tls: {
-                ciphers: 'SSLv3',
+                // Do not fail on invalid certs
                 rejectUnauthorized: false
             }
         });

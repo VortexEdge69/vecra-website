@@ -21,16 +21,23 @@ export async function POST(request: NextRequest) {
     })
 
     try {
-      const emailSent = await emailService.sendSupportRequest(category, description, email)
+      const emailSent = await emailService.sendSupportRequest(email, category, description)
       if (!emailSent) {
         console.warn('Failed to send support request email')
       }
+      return NextResponse.json({ 
+        message: 'Support request received', 
+        success: true,
+        emailSent 
+      }, { status: 200 })
     } catch (err) {
       console.error('Email sending error:', err)
-      // Do not fail the entire request on email errors
+      return NextResponse.json({ 
+        message: 'Support request received with email delay', 
+        success: true,
+        emailSent: false 
+      }, { status: 200 })
     }
-
-    return NextResponse.json({ message: 'Support request received', emailSent: true }, { status: 200 })
   } catch (error) {
     console.error('Support request error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

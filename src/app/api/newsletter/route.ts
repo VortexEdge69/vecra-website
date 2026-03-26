@@ -80,11 +80,14 @@ export async function POST(request: NextRequest) {
 
         // Send confirmation email
         try {
-            await emailService.sendNewsletterConfirmation(email)
-            console.log('✅ Newsletter confirmation email sent to:', email)
+            const emailSent = await emailService.sendNewsletterConfirmation(email)
+            if (emailSent) {
+                console.log('✅ Newsletter confirmation email sent to:', email)
+            } else {
+                console.warn('⚠️ Subscription saved but confirmation email failed for:', email)
+            }
         } catch (emailError) {
-            console.error('Email sending error:', emailError)
-            // Don't fail the request if email fails
+            console.error('Unexpected email error:', emailError)
         }
 
         return NextResponse.json(

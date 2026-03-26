@@ -25,3 +25,9 @@ CREATE POLICY "Allow public inserts" ON newsletter_subscriptions
 CREATE POLICY "Allow public reads" ON newsletter_subscriptions
   FOR SELECT TO anon, authenticated
   USING (true);
+
+-- Create policy to allow updates (for reactivating subscriptions)
+CREATE POLICY "Allow public updates" ON newsletter_subscriptions
+  FOR UPDATE TO anon, authenticated
+  USING (true)
+  WITH CHECK (true);
