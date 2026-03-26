@@ -9,16 +9,27 @@ module.exports = {
     theme: {
         extend: {
             colors: {
+                brand: {
+                    bg: '#050a10',
+                    surface: '#0b1219',
+                    primary: '#0076fe',
+                    secondary: '#005ac1',
+                    border: '#1e293b',
+                    text: '#f8fafc',
+                    muted: '#94a3b8',
+                },
                 accent: '#0076fe',
             },
-            backdropBlur: {
-                xs: '2px',
-            },
-            boxShadow: {
-                'glass': '0 4px 32px 0 rgba(0, 0, 0, 0.15)',
+            spacing: {
+                'px-grid': '8px',
+                'grid-gap': '12px',
             },
             fontFamily: {
-                sans: ['Inter', 'Rubik', 'Outfit', 'ui-sans-serif', 'system-ui'],
+                sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+                display: ['Outfit', 'Inter', 'sans-serif'],
+            },
+            borderWidth: {
+                '1': '1px',
             },
         },
     },
@@ -26,4 +37,4 @@ module.exports = {
         require('@tailwindcss/forms'),
         require('@tailwindcss/typography'),
     ],
-} 
+}

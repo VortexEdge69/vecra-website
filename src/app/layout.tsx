@@ -1,38 +1,35 @@
-// layout.tsx
-
 import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
-import { UserProvider } from "@/context/UserContext";
-import ParallaxProvider from "@/components/ParallaxProvider";
-import Script from "next/script";
+import CookieConsent from "@/components/CookieConsent";
 
 export const metadata: Metadata = {
-  title: "VecraHost - Best Minecraft Server Hosting India | VPS Hosting | Game. Host. Rule.",
+  title: {
+    default: "VecraHost | Enterprise VPS & Cloud Hosting Solutions",
+    template: "%s | VecraHost",
+  },
   description:
-    "VecraHost offers high-performance Minecraft and VPS hosting in India. Best Minecraft server hosting with DDoS protection, instant setup, and gamer-friendly features.",
+    "VecraHost provides high-performance enterprise VPS, Cloud hosting, and Domain services in India. Low latency, 99.9% uptime, and 24/7 dedicated support for mission-critical infrastructure.",
   keywords:
-    "vecrahost, minecraft server hosting india, best minecraft hosting, vps hosting india, game server hosting, affordable minecraft hosting, ddos protection minecraft, instant setup minecraft server, premium vps india, crossplay minecraft bedrock java",
+    "vecrahost, enterprise vps india, cloud hosting india, high performance vps, dedicated resources, low latency hosting mumbai, business cloud servers, nvme storage hosting",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/vecraSymbol.png",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://vecrahost.in",
+    siteName: "VecraHost",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-black text-white font-sans antialiased">
-        <UserProvider>
-          <ParallaxProvider>
-            <Navbar />
-            {children}
-          </ParallaxProvider>
-        </UserProvider>
-        <Script
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          strategy="afterInteractive"
-          data-cf-beacon='{"token":"4c8e303a01e34669a718349d28fca84d"}'
-        />
+    <html lang="en" className="dark scroll-smooth">
+      <body className="bg-brand-bg text-brand-text font-sans antialiased">
+        <Navbar />
+        <main>{children}</main>
+        <CookieConsent />
       </body>
     </html>
   );

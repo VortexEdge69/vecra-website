@@ -2,169 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-@keyframes parallax-scroll {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
-}
-
-@layer utilities {
-  .animate-float-slow {
-    animation: float 8s infinite ease-in-out;
-  }
-  .animate-float-medium {
-    animation: float 6s infinite ease-in-out;
-  }
-  .animate-float-fast {
-    animation: float 4s infinite ease-in-out;
-  }
-  .animate-parallax {
-    animation: parallax-scroll 60s linear infinite;
-  }
-}
-
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
-@import '@fontsource/rubik/400.css';
-@import '@fontsource/rubik/500.css';
-@import '@fontsource/rubik/600.css';
-@import '@fontsource/rubik/700.css';
-@import '@fontsource/outfit/400.css';
-@import '@fontsource/outfit/500.css';
-@import '@fontsource/outfit/600.css';
-@import '@fontsource/outfit/700.css';
-
 @layer base {
-    :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-body {
-  @apply bg-black text-white font-sans antialiased;
-  background: var(--background);
-  color: var(--foreground);
-}
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+  :root {
+    --brand-bg: #050a10;
+    --brand-surface: #0b1219;
+    --brand-primary: #0076fe;
+    --brand-text: #f8fafc;
+    --brand-muted: #94a3b8;
+    --brand-border: #1e293b;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  body {
+    @apply bg-brand-bg text-brand-text font-sans antialiased;
+    background-color: var(--brand-bg);
+    color: var(--brand-text);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
   }
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-semibold transition-all duration-200 flex items-center justify-center gap-2;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
-}
-
-.animate-slide-down {
-  animation: slideDown 0.3s ease-out forwards;
-}
-
-@keyframes pulseGlow {
-  from {
-    box-shadow: 0 0 20px rgba(0, 102, 255, 0.1);
+  .btn-secondary {
+    @apply px-6 py-3 bg-transparent border border-brand-border hover:bg-white/5 text-brand-text font-semibold transition-all duration-200 flex items-center justify-center gap-2;
   }
 
-  to {
-    box-shadow: 0 0 30px rgba(0, 102, 255, 0.2);
+  .card-enterprise {
+    @apply bg-brand-surface border border-brand-border p-6 shadow-sm hover:border-brand-primary/50 transition-colors duration-300;
+  }
+
+  .grid-enterprise {
+    display: grid;
+    gap: 12px;
   }
 }
 
-@keyframes bounceSubtle {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-2px);
-  }
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite alternate;
+::-webkit-scrollbar-track {
+  @apply bg-brand-bg;
 }
 
-.animate-bounce-subtle {
-  animation: bounceSubtle 0.6s ease-in-out;
+::-webkit-scrollbar-thumb {
+  @apply bg-brand-border hover:bg-brand-muted/50 transition-colors;
 }
 
-/* Disable number input spinners */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* Custom Scrollbar for Payment Modal */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #1e1e2f;
-  border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #3b82f6;
-  border-radius: 3px;
-  transition: background-color 0.2s ease;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #2563eb;
-}
-
-/* Firefox scrollbar */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #3b82f6 #1e1e2f;
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
+/* Eliminate generic template look - remove all excessive blurs/animations */
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, #1e293b 1px, transparent 1px),
+    linear-gradient(to bottom, #1e293b 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
 }

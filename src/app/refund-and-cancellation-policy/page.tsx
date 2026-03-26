@@ -1,58 +1,57 @@
 import React from 'react';
+import Footer from "@/components/Footer";
 
-const RefundAndCancellationPolicy = () => {
-  const today = new Date().toLocaleDateString('en-IN');
-  return (
-    <div className="bg-gray-900 text-white min-h-screen pt-24 sm:pt-32">
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold mb-8 text-center">Refund & Cancellation Policy</h1>
-        <div className="prose prose-invert max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
-          <p className="text-lg">Effective Date: 25-08-2025</p>
-          <p className="text-sm text-gray-400">Last Updated: {today}</p>
+const RefundPolicy = () => {
+    return (
+        <div className="bg-brand-bg text-brand-text min-h-screen">
+            <div className="pt-32 pb-24 px-6">
+                <div className="max-w-4xl mx-auto">
+                    <div className="mb-16">
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">Refund & Cancellation</h1>
+                        <p className="text-brand-muted font-bold text-xs uppercase tracking-widest">Effective Date: October 2025</p>
+                    </div>
 
-          <h2 className="text-2xl font-semibold mt-8 border-b border-gray-700 pb-2">1. Refund Policy</h2>
-          <p>Vecra Host follows a strict no-refund policy. Payments made for any service are final and non-refundable, including:</p>
-          <ul className="list-disc list-inside space-y-2">
-            <li>VPS hosting</li>
-            <li>Minecraft/Game servers</li>
-            <li>Web hosting</li>
-            <li>Domain registrations</li>
-            <li>Addons, upgrades, or custom services</li>
-          </ul>
-          <p className="mt-4">Refunds are not provided for:</p>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Customer mistakes</li>
-            <li>Incorrect plan purchase</li>
-            <li>Change of mind</li>
-            <li>Downtime</li>
-            <li>Abuse-related termination</li>
-            <li>Data loss caused by the customer</li>
-          </ul>
+                    <div className="space-y-12 card-enterprise !p-8 md:!p-12">
+                        <section className="space-y-4">
+                            <h2 className="text-xl font-bold text-brand-primary uppercase tracking-wider">1. Cancellation Policy</h2>
+                            <p className="text-brand-muted leading-relaxed text-sm">
+                                Customers can cancel their services at any time through the client portal. Cancellation requests must be submitted at least 24 hours before the renewal date to avoid being charged for the next billing cycle.
+                            </p>
+                        </section>
 
-          <h2 className="text-2xl font-semibold mt-8 border-b border-gray-700 pb-2">2. Cancellation Policy</h2>
-          <p>You may cancel your service anytime through the client dashboard. Cancellation stops future billing only.</p>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Cancelling does not entitle you to a refund for the remaining time.</li>
-            <li>Services may be terminated immediately or at the end of the billing cycle.</li>
-          </ul>
+                        <section className="space-y-4">
+                            <h2 className="text-xl font-bold text-brand-primary uppercase tracking-wider">2. Refund Eligibility</h2>
+                            <div className="text-brand-muted leading-relaxed space-y-4 text-sm">
+                                <p>Refunds are considered on a case-by-case basis under the following conditions:</p>
+                                <ul className="space-y-3">
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 bg-brand-primary rounded-full mt-1.5 flex-shrink-0"></div> <span>Service did not meet the guaranteed 99.9% uptime.</span></li>
+                                    <li className="flex gap-2"><div className="w-1.5 h-1.5 bg-brand-primary rounded-full mt-1.5 flex-shrink-0"></div> <span>Technical issues on our end prevented usage within the first 48 hours.</span></li>
+                                </ul>
+                            </div>
+                        </section>
 
-          <h2 className="text-2xl font-semibold mt-8 border-b border-gray-700 pb-2">3. Chargebacks</h2>
-          <p>Filing a chargeback or payment dispute results in:</p>
-          <ul className="list-disc list-inside space-y-2">
-            <li>Immediate termination of all active services</li>
-            <li>Permanent ban from Vecra Host</li>
-            <li>Reporting to fraud databases (if needed)</li>
-          </ul>
+                        <section className="space-y-4">
+                            <h2 className="text-xl font-bold text-brand-primary uppercase tracking-wider">3. Non-Refundable Items</h2>
+                            <p className="text-brand-muted leading-relaxed text-sm">
+                                Domain registrations, setup fees, and services suspended due to TOS violations are non-refundable.
+                            </p>
+                        </section>
 
-          <h2 className="text-2xl font-semibold mt-8 border-b border-gray-700 pb-2">4. Trials</h2>
-          <p>If a free trial or promotional offer is provided, it cannot be refunded or compensated.</p>
-
-          <h2 className="text-2xl font-semibold mt-8 border-b border-gray-700 pb-2">5. Contact</h2>
-          <p>For billing issues or disputes, email: <a href="mailto:support@vecrahost.in" className="text-blue-400 hover:underline">support@vecrahost.in</a>. We will make our best effort to resolve concerns.</p>
+                        <section className="space-y-4 border-t border-brand-border pt-8">
+                            <h2 className="text-xl font-bold text-brand-primary uppercase tracking-wider">4. Contact Support</h2>
+                            <p className="text-brand-muted leading-relaxed text-sm mb-4">
+                                To request a refund or discuss cancellation, please open a ticket in the billing portal or email our billing department.
+                            </p>
+                            <a href="mailto:support@vecrahost.in" className="inline-block text-brand-text font-mono text-sm font-bold border-b border-brand-primary pb-1">
+                                billing@vecrahost.in
+                            </a>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <Footer />
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default RefundAndCancellationPolicy;
+export default RefundPolicy;

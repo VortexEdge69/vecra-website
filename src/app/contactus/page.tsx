@@ -1,10 +1,11 @@
 "use client"
 import { useState } from 'react'
-import Head from 'next/head'
+import { motion } from 'framer-motion'
+import Footer from '@/components/Footer'
 
 export default function ContactUs() {
   const [email, setEmail] = useState('')
-  const [category, setCategory] = useState('Billing')
+  const [category, setCategory] = useState('Billing Inquiry')
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [status, setStatus] = useState<null | { success: boolean; message: string }>(null)
@@ -23,7 +24,7 @@ export default function ContactUs() {
       if (res.ok) {
         setStatus({ success: true, message: 'Your request has been submitted. Our team will email you shortly.' })
         setEmail('')
-        setCategory('Billing')
+        setCategory('Billing Inquiry')
         setDescription('')
       } else {
         setStatus({ success: false, message: 'Failed to submit request. Please try again.' })
@@ -37,80 +38,106 @@ export default function ContactUs() {
   }
 
   return (
-    <>
-      <Head>
-        <title>Support - VecraHost</title>
-        <meta name="description" content="Get support from VecraHost" />
-      </Head>
-      <main className="container mx-auto px-4 py-12 bg-gray-900 text-white min-h-screen pt-24">
-        <div className="max-w-xl mx-auto">
-          <h1 className="text-4xl font-extrabold mb-6 text-center text-purple-400">Support</h1>
-          <div className="bg-gray-800 p-6 md:p-8 rounded-xl shadow-lg">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2 text-purple-300">Email</h2>
-              <p>
-                <a href="mailto:support@vecrahost.in" className="text-blue-400 hover:text-blue-300 transition-colors duration-300">
-                  support@vecrahost.in
-                </a>
-              </p>
+    <div className="bg-brand-bg text-brand-text min-h-screen">
+      <main className="pt-32 pb-24 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-20"
+          >
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">Centralized Support</h1>
+            <p className="text-brand-muted text-lg max-w-2xl mx-auto leading-relaxed">
+              Need technical assistance or have questions about enterprise configurations?
+              Our engineering team is available 24/7 to support your infrastructure.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {/* Sidebar Info */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="card-enterprise">
+                <div className="w-10 h-10 bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center mb-6">
+                  <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
+                <h4 className="font-bold text-lg mb-2">Direct Email</h4>
+                <p className="text-brand-muted text-sm mb-4">For sales and partnerships:</p>
+                <a href="mailto:support@vecrahost.in" className="text-brand-primary font-mono text-sm font-bold hover:underline">support@vecrahost.in</a>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <label className="flex flex-col text-sm text-gray-300">
-                Your Email
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="you@example.com"
-                />
-              </label>
+            {/* Contact Form */}
+            <div className="lg:col-span-8">
+              <div className="card-enterprise">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] uppercase font-black tracking-widest text-brand-muted">Email Address</label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-3 bg-brand-bg border border-brand-border text-brand-text focus:outline-none focus:border-brand-primary transition-colors text-sm"
+                        placeholder="corporate@domain.com"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] uppercase font-black tracking-widest text-brand-muted">Inquiry Category</label>
+                      <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-full px-4 py-3 bg-brand-bg border border-brand-border text-brand-text focus:outline-none focus:border-brand-primary transition-colors text-sm cursor-pointer"
+                      >
+                        <option>Billing Inquiry</option>
+                        <option>Technical Support</option>
+                        <option>Sales Inquiry</option>
+                        <option>Project Consultation</option>
+                        <option>Abuse Report</option>
+                      </select>
+                    </div>
+                  </div>
 
-              <label className="flex flex-col text-sm text-gray-300">
-                Category
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="mt-1 px-3 py-2 rounded-lg bg-gray-800 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-accent"
-                >
-                  <option>Billing</option>
-                  <option>Minecraft Hosting</option>
-                  <option>VPS Hosting</option>
-                  <option>Technical Support</option>
-                  <option>Sales</option>
-                  <option>Other</option>
-                </select>
-              </label>
+                  <div className="space-y-3">
+                    <label className="text-[10px] uppercase font-black tracking-widest text-brand-muted">Message Analysis</label>
+                    <textarea
+                      required
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={8}
+                      className="w-full px-4 py-3 bg-brand-bg border border-brand-border text-brand-text focus:outline-none focus:border-brand-primary transition-colors text-sm resize-none"
+                      placeholder="Provide a detailed description of your request..."
+                    />
+                  </div>
 
-              <label className="flex flex-col text-sm text-gray-300">
-                Description
-                <textarea
-                  required
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                  className="mt-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="Describe your issue or request"
-                />
-              </label>
+                  <div className="flex flex-col md:flex-row items-center gap-6 pt-4">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="btn-primary w-full md:w-auto px-12 py-4 disabled:opacity-50"
+                    >
+                      {submitting ? 'Processing...' : 'Submit Request'}
+                    </button>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-3 px-4 bg-accent text-white font-semibold rounded-lg hover:bg-[#005fcb] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting ? 'Submitting...' : 'Submit Support Request'}
-              </button>
-
-              {status && (
-                <p className={`text-sm ${status.success ? 'text-green-400' : 'text-red-400'}`}>{status.message}</p>
-              )}
-            </form>
+                    {status && (
+                      <motion.p
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`text-sm font-bold ${status.success ? 'text-green-500' : 'text-red-500'}`}
+                      >
+                        {status.message}
+                      </motion.p>
+                    )}
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </main>
-    </>
+      <Footer />
+    </div>
   )
 }
