@@ -16,7 +16,11 @@ interface PaymentNotificationData {
 }
 
 class EmailService {
-    private createTransporter() {
+    private transporter: nodemailer.Transporter | null = null;
+
+    private getTransporter() {
+        if (this.transporter) return this.transporter;
+
         const emailUser = process.env.EMAIL_USER;
         const emailPassword = process.env.EMAIL_APP_PASSWORD;
         const emailHost = process.env.EMAIL_HOST || 'smtp.zoho.in';
@@ -24,12 +28,13 @@ class EmailService {
         const isSecure = process.env.EMAIL_SECURE !== 'false' && emailPort === 465;
 
         if (!emailUser || !emailPassword) {
-            throw new Error('Email credentials not configured in environment variables');
+            console.error('❌ Email credentials missing in environment variables');
+            return null;
         }
 
-        console.log(`📡 Attempting to connect to SMTP: ${emailHost}:${emailPort} (Secure: ${isSecure})`);
+        console.log(`📡 SMTP Connection Init: ${emailHost}:${emailPort} (Secure: ${isSecure})`);
 
-        return nodemailer.createTransport({
+        this.transporter = nodemailer.createTransport({
             host: emailHost,
             port: emailPort,
             secure: isSecure,
@@ -37,19 +42,22 @@ class EmailService {
                 user: emailUser,
                 pass: emailPassword,
             },
-            tls: {
-                // Do not fail on invalid certs
-                rejectUnauthorized: false
-            }
+            // Note: Removed rejectUnauthorized: false as it can trigger spam flags
+            // Standard Zoho setup doesn't require it
+            debug: process.env.NODE_ENV === 'development',
         });
+
+        return this.transporter;
     }
 
     async sendEmail(emailData: EmailData): Promise<boolean> {
         try {
-            const transporter = this.createTransporter();
+            const transporter = this.getTransporter();
+            if (!transporter) return false;
 
+            const fromEmail = process.env.EMAIL_USER;
             const mailOptions = {
-                from: `"VecraHost" <${process.env.EMAIL_USER}>`,
+                from: `"VecraHost" <${fromEmail}>`,
                 to: emailData.to,
                 subject: emailData.subject,
                 html: emailData.html,
@@ -59,8 +67,14 @@ class EmailService {
             const result = await transporter.sendMail(mailOptions);
             console.log('✅ Email sent successfully:', result.messageId);
             return true;
-        } catch (error) {
-            console.error('❌ Email sending failed:', error);
+        } catch (error: any) {
+            console.error('❌ Email sending failed:', error.message || error);
+            
+            // Check for specific Zoho error
+            if (error.responseCode === 550 && error.response.includes('Unusual sending activity')) {
+                console.error('⚠️ ACTION REQUIRED: Your Zoho account has been flagged for unusual activity. Please log in to Zoho webmail and verify your account.');
+            }
+            
             return false;
         }
     }
@@ -307,6 +321,70 @@ class EmailService {
         return await this.sendEmail({
             to: subscriberEmail,
             subject: '✅ Welcome to VecraHost - Subscription Confirmed',
+            html,
+        });
+    }
+
+    async sendNewsletterOTP(subscriberEmail: string, otp: string): Promise<boolean> {
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+                    <tr>
+                        <td align="center">
+                            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <!-- Header -->
+                                <tr>
+                                    <td style="background: linear-gradient(135deg, #0076fe 0%, #005ac1 100%); padding: 50px 30px; text-align: center;">
+                                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Verification Required</h1>
+                                        <p style="color: rgba(255,255,255,0.9); margin: 12px 0 0 0; font-size: 16px;">Finish your newsletter subscription</p>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Content -->
+                                <tr>
+                                    <td style="padding: 48px 40px; text-align: center;">
+                                        <h2 style="color: #0b1219; font-size: 22px; margin: 0 0 16px 0; font-weight: 600;">Confirm Your Email</h2>
+                                        
+                                        <p style="color: #475569; font-size: 16px; line-height: 1.7; margin: 0 0 32px 0;">
+                                            Please use the one-time verification code below to complete your subscription to the VecraHost newsletter.
+                                        </p>
+                                        
+                                        <div style="background-color: #f1f5f9; border: 2px dashed #0076fe; padding: 24px; margin: 32px 0; border-radius: 6px;">
+                                            <p style="color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 12px 0;">Verification Code</p>
+                                            <h3 style="color: #0076fe; margin: 0; font-size: 42px; font-weight: 800; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otp}</h3>
+                                        </div>
+                                        
+                                        <p style="color: #64748b; font-size: 14px; margin: 32px 0 0 0;">
+                                            This code will expire in 10 minutes. If you didn't request this code, you can safely ignore this email.
+                                        </p>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Footer -->
+                                <tr>
+                                    <td style="padding: 32px 40px; border-top: 1px solid #e2e8f0; background-color: #f8fafc; text-align: center;">
+                                        <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                                            © ${new Date().getFullYear()} VecraHost infrastructure. Build for the future.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+        `;
+
+        return await this.sendEmail({
+            to: subscriberEmail,
+            subject: `Verification code for subscription: ${otp}`,
             html,
         });
     }

@@ -38,22 +38,50 @@ function getUserAgent(request: NextRequest): string {
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json()
-        const { email, firstName } = body
+        // 1. Origin/Referer Validation (Prevent cross-site and external API calls)
+        const origin = request.headers.get('origin')
+        const referer = request.headers.get('referer')
+        const host = request.headers.get('host')
+        
+        // Define allowed origins
+        const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1')
+        const isAllowedOrigin = origin && (origin.includes('vecrahost.in') || (isLocal && origin.includes('localhost')))
+        const isAllowedReferer = referer && (referer.includes('vecrahost.in') || (isLocal && referer.includes('localhost')))
 
-        // 1. Honeypot check (firstName is hidden from users, only bots fill it)
+        if (!isAllowedOrigin && !isAllowedReferer) {
+            console.warn(`[Newsletter] unauthorized access attempt from Origin: ${origin}, Referer: ${referer}`)
+            return NextResponse.json({ error: 'Unauthorized request source' }, { status: 403 })
+        }
+
+        // 2. Custom Security Header Check
+        const securityHeader = request.headers.get('x-requested-with')
+        if (securityHeader !== 'vecra-client') {
+            return NextResponse.json({ error: 'Invalid client' }, { status: 403 })
+        }
+
+        // 3. Simple User-Agent Bot Check
+        const ua = request.headers.get('user-agent')?.toLowerCase() || ''
+        const botKeywords = ['bot', 'crawler', 'spider', 'headless', 'puppeteer', 'selenium', 'python-requests', 'curl', 'postman']
+        if (botKeywords.some(kw => ua.includes(kw))) {
+            return NextResponse.json({ error: 'Automated requests are not allowed' }, { status: 403 })
+        }
+
+        const body = await request.json()
+        const { email, firstName, action, otp } = body
+
+        // 4. Honeypot check (firstName is hidden from users, only bots fill it)
         if (firstName) {
             console.warn(`[Newsletter] Honeypot triggered from IP: ${getClientIp(request)}`)
             return NextResponse.json(
                 {
-                    message: 'Successfully subscribed! Check your email for confirmation.',
+                    message: 'Verification code sent! Please check your email.',
                     success: true
                 },
                 { status: 200 }
             )
         }
 
-        // 2. Enhanced Email validation
+        // 5. Enhanced Email validation
         if (!email || !/^[a-zA-Z0-9._%+-]+@(?!(?:[a-zA-Z0-9-]+\.)*internal)(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,15}$/.test(email)) {
             return NextResponse.json(
                 { error: 'Please enter a valid email address' },
@@ -61,126 +89,135 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // 3. Block common spam/fake patterns (e.g. very long prefixes)
-        const [localPart] = email.split('@')
-        if (localPart.length > 64) {
-            return NextResponse.json(
-                { error: 'Email address is too long' },
-                { status: 400 }
-            )
-        }
-        
         const ip = getClientIp(request)
-        const userAgent = getUserAgent(request)
 
-        // --- RATE LIMITING ---
-        // 1. IP-based rate limit: Max 5 attempts per 10 minutes from same IP
-        const TEN_MINUTES_AGO = new Date(Date.now() - 10 * 60 * 1000).toISOString()
-        const { count: ipCount, error: ipCountError } = await supabase
-            .from('newsletter_subscriptions')
-            .select('*', { count: 'exact', head: true })
-            .eq('ip_address', ip)
-            .gte('subscribed_at', TEN_MINUTES_AGO)
+        // --- PHASE 1: REQUEST OTP ---
+        if (action === 'request-otp') {
+            // Rate limit: Max 3 OTP requests per 10 seconds per IP
+            const RECENT_LIMIT = new Date(Date.now() - 10 * 1000).toISOString()
+            const { count: otpCount, error: otpLimitError } = await supabase
+                .from('newsletter_otps')
+                .select('*', { count: 'exact', head: true })
+                .eq('ip_address', ip)
+                .gte('created_at', RECENT_LIMIT)
 
-        if (!ipCountError && ipCount !== null && ipCount >= 5) {
-            console.warn(`[Newsletter] Rate limit triggered for IP: ${ip}`)
-            return NextResponse.json(
-                { error: 'Too many subscription attempts. Please try again in 10 minutes.' },
-                { status: 429 }
-            )
-        }
-
-        // 2. Global rate limit: Max 50 attempts per hour across all IPs
-        // This protects the email service from being used for mass spam
-        const ONE_HOUR_AGO = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-        const { count: globalCount, error: globalError } = await supabase
-            .from('newsletter_subscriptions')
-            .select('*', { count: 'exact', head: true })
-            .gte('subscribed_at', ONE_HOUR_AGO)
-
-        if (!globalError && globalCount !== null && globalCount >= 50) {
-            console.error('[Newsletter] Global rate limit reached!')
-            return NextResponse.json(
-                { error: 'Newsletter system is temporarily under heavy load. Please try again later.' },
-                { status: 429 }
-            )
-        }
-        // --- END RATE LIMITING ---
-
-        // Check if email already exists
-        const { data: existing } = await supabase
-            .from('newsletter_subscriptions')
-            .select('email, status')
-            .eq('email', email)
-            .single()
-
-        if (existing) {
-            if (existing.status === 'active') {
+            if (!otpLimitError && otpCount !== null && otpCount >= 3) {
                 return NextResponse.json(
-                    { error: 'This email is already subscribed to our newsletter' },
-                    { status: 409 }
+                    { error: 'Too many requests. Please try again later.' },
+                    { status: 429 }
                 )
-            } else {
-                // Reactivate subscription
-                const { error: updateError } = await supabase
-                    .from('newsletter_subscriptions')
-                    .update({ status: 'active', subscribed_at: new Date().toISOString() })
-                    .eq('email', email)
-
-                if (updateError) {
-                    console.error('Supabase update error:', updateError)
-                    return NextResponse.json(
-                        { error: 'Failed to reactivate subscription' },
-                        { status: 500 }
-                    )
-                }
             }
-        } else {
-            // Insert new subscription
+
+            // Generate 6-digit OTP
+            const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+            const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 minutes
+
             const { error: insertError } = await supabase
-                .from('newsletter_subscriptions')
+                .from('newsletter_otps')
                 .insert([
                     {
                         email,
-                        ip_address: ip,
-                        user_agent: userAgent,
-                        status: 'active'
+                        otp: generatedOtp,
+                        expires_at: expiresAt,
+                        ip_address: ip
                     }
                 ])
 
             if (insertError) {
-                console.error('Supabase insert error:', insertError)
-                return NextResponse.json(
-                    { error: 'Failed to subscribe. Please try again.' },
-                    { status: 500 }
-                )
+                console.error('OTP insert error:', insertError)
+                return NextResponse.json({ error: 'Failed to generate verification code' }, { status: 500 })
+            }
+
+            // Send OTP email
+            try {
+                const emailSent = await emailService.sendNewsletterOTP(email, generatedOtp)
+                if (emailSent) {
+                    return NextResponse.json({ message: 'Verification code sent!', success: true }, { status: 200 })
+                } else {
+                    return NextResponse.json({ error: 'Failed to send verification email' }, { status: 500 })
+                }
+            } catch (err) {
+                console.error('Email error:', err)
+                return NextResponse.json({ error: 'Failed to send verification email' }, { status: 500 })
             }
         }
 
-        // Send confirmation email
-        try {
-            const emailSent = await emailService.sendNewsletterConfirmation(email)
-            if (emailSent) {
-                console.log('✅ Newsletter confirmation email sent to:', email)
+        // --- PHASE 2: VERIFY OTP ---
+        if (action === 'verify-otp') {
+            if (!otp) return NextResponse.json({ error: 'Verification code is required' }, { status: 400 })
+
+            // Find the most recent unverified OTP for this email
+            const { data: otpRecords, error: fetchError } = await supabase
+                .from('newsletter_otps')
+                .select('*')
+                .eq('email', email)
+                .eq('verified', false)
+                .order('created_at', { ascending: false })
+                .limit(1)
+
+            if (fetchError || !otpRecords || otpRecords.length === 0) {
+                return NextResponse.json({ error: 'No valid verification code found' }, { status: 400 })
+            }
+
+            const record = otpRecords[0]
+            const now = new Date()
+            const expiry = new Date(record.expires_at)
+
+            if (now > expiry) {
+                return NextResponse.json({ error: 'Verification code has expired' }, { status: 400 })
+            }
+
+            if (record.otp !== otp) {
+                return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 })
+            }
+
+            // Mark OTP as verified
+            await supabase
+                .from('newsletter_otps')
+                .update({ verified: true })
+                .eq('id', record.id)
+
+            // Now handle the actual subscription
+            const userAgent = getUserAgent(request)
+            
+            // Check if email already exists in main table
+            const { data: existing } = await supabase
+                .from('newsletter_subscriptions')
+                .select('email, status')
+                .eq('email', email)
+                .single()
+
+            if (existing) {
+                if (existing.status === 'active') {
+                    return NextResponse.json({ message: 'You are already subscribed!', success: true }, { status: 200 })
+                } else {
+                    // Reactivate
+                    await supabase
+                        .from('newsletter_subscriptions')
+                        .update({ status: 'active', subscribed_at: new Date().toISOString() })
+                        .eq('email', email)
+                }
             } else {
-                console.warn('⚠️ Subscription saved but confirmation email failed for:', email)
+                // New subscription
+                await supabase
+                    .from('newsletter_subscriptions')
+                    .insert([{ email, ip_address: ip, user_agent: userAgent, status: 'active' }])
             }
-        } catch (emailError) {
-            console.error('Unexpected email error:', emailError)
+
+            // Send Final Confirmation Email
+            try {
+                await emailService.sendNewsletterConfirmation(email)
+            } catch (err) {
+                console.error('Final confirmation email error:', err)
+            }
+
+            return NextResponse.json({ message: 'Successfully subscribed!', success: true }, { status: 200 })
         }
 
-        return NextResponse.json(
-            {
-                message: 'Successfully subscribed! Check your email for confirmation.',
-                success: true
-            },
-            { status: 200 }
-        )
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+
     } catch (error) {
-        console.error('Newsletter subscription error:', error)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        console.error('Newsletter error:', error)
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

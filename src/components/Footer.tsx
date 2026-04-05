@@ -6,6 +6,8 @@ import { useState } from "react";
 export default function Footer() {
     const [email, setEmail] = useState("");
     const [honey, setHoney] = useState("");
+    const [otp, setOtp] = useState("");
+    const [isVerifying, setIsVerifying] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -13,9 +15,9 @@ export default function Footer() {
         e.preventDefault();
         if (!email) return;
 
-        // Form-level honeypot check (redundant but good for UX if needed)
+        // Form-level honeypot check
         if (honey) {
-            setMessage({ type: 'success', text: 'Successfully subscribed! Check your email.' });
+            setMessage({ type: 'success', text: 'Verification code sent! Please check your email.' });
             setEmail("");
             setHoney("");
             return;
@@ -27,20 +29,61 @@ export default function Footer() {
         try {
             const res = await fetch('/api/newsletter', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, firstName: honey })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-requested-with': 'vecra-client'
+                },
+                body: JSON.stringify({ email, firstName: honey, action: 'request-otp' })
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                setMessage({ type: 'success', text: 'Successfully subscribed! Check your email.' });
-                setEmail("");
+                setIsVerifying(true);
+                setMessage({ type: 'success', text: 'Verification code sent! Check your inbox.' });
             } else {
-                setMessage({ type: 'error', text: data.error || 'Subscription failed. Please try again.' });
+                setMessage({ type: 'error', text: data.error || 'Failed to send verification code.' });
             }
         } catch (error) {
-            console.error('Newsletter subscription error:', error);
+            console.error('Newsletter OTP request error:', error);
+            setMessage({ type: 'error', text: 'Network error. Please try again.' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerify = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!otp || otp.length !== 6) {
+            setMessage({ type: 'error', text: 'Please enter a valid 6-digit code.' });
+            return;
+        }
+
+        setLoading(true);
+        setMessage(null);
+
+        try {
+            const res = await fetch('/api/newsletter', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-requested-with': 'vecra-client'
+                },
+                body: JSON.stringify({ email, otp, action: 'verify-otp' })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setMessage({ type: 'success', text: 'Successfully subscribed! Welcome aboard.' });
+                setEmail("");
+                setOtp("");
+                setIsVerifying(false);
+            } else {
+                setMessage({ type: 'error', text: data.error || 'Verification failed.' });
+            }
+        } catch (error) {
+            console.error('Newsletter verification error:', error);
             setMessage({ type: 'error', text: 'Network error. Please try again.' });
         } finally {
             setLoading(false);
@@ -131,39 +174,82 @@ export default function Footer() {
                     <h4 className="text-sm font-bold text-brand-text uppercase tracking-widest mb-3">Stay Updated</h4>
                     <p className="text-brand-muted text-sm mb-6">Subscribe to receive product updates, infrastructure announcements, and exclusive offers.</p>
 
-                    <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
-                        <div className="hidden" aria-hidden="true">
+                    {!isVerifying ? (
+                        <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                            <div className="hidden" aria-hidden="true">
+                                <input
+                                    type="text"
+                                    name="firstName"
+                                    tabIndex={-1}
+                                    value={honey}
+                                    onChange={(e) => setHoney(e.target.value)}
+                                    autoComplete="off"
+                                />
+                            </div>
                             <input
-                                type="text"
-                                name="firstName"
-                                tabIndex={-1}
-                                value={honey}
-                                onChange={(e) => setHoney(e.target.value)}
-                                autoComplete="off"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email address"
+                                required
+                                disabled={loading}
+                                className="flex-1 px-4 py-3 bg-brand-surface border border-brand-border text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-colors disabled:opacity-50"
                             />
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="btn-primary py-3 px-6 text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                            >
+                                {loading ? 'Sending Code...' : 'Subscribe'}
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="space-y-4">
+                            <form onSubmit={handleVerify} className="flex flex-col sm:flex-row items-center gap-3">
+                                <input
+                                    type="text"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                    placeholder="Enter 6-digit code"
+                                    required
+                                    disabled={loading}
+                                    className={`flex-1 w-full px-4 py-3 bg-brand-surface border border-brand-primary text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-all font-mono text-center disabled:opacity-50 ${otp ? 'tracking-[0.5em] font-bold' : 'tracking-normal'}`}
+                                />
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="btn-primary flex-1 sm:flex-none py-3 px-6 text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                    >
+                                        {loading ? 'Verifying...' : 'Verify & Subscribe'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setIsVerifying(false); setMessage(null); }}
+                                        className="text-brand-muted hover:text-brand-text text-[10px] uppercase tracking-widest font-bold px-2 whitespace-nowrap transition-colors"
+                                    >
+                                        Change Email
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email address"
-                            required
-                            disabled={loading}
-                            className="flex-1 px-4 py-3 bg-brand-surface border border-brand-border text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-colors disabled:opacity-50"
-                        />
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="btn-primary py-3 px-6 text-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                        >
-                            {loading ? 'Subscribing...' : 'Subscribe'}
-                        </button>
-                    </form>
+                    )}
 
                     {message && (
-                        <p className={`mt-3 text-xs font-bold ${message.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-                            {message.text}
-                        </p>
+                        <div className={`mt-4 flex items-center gap-2 p-3 ${message.type === 'success' ? 'bg-green-500/10 border-l-2 border-green-500' : 'bg-red-500/10 border-l-2 border-red-500'}`}>
+                            {message.type === 'success' ? (
+                                <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            ) : (
+                                <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            )}
+                            <p className={`text-xs font-bold ${message.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+                                {message.text}
+                            </p>
+                        </div>
                     )}
                 </div>
             </div>
