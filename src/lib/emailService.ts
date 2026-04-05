@@ -67,11 +67,12 @@ class EmailService {
             const result = await transporter.sendMail(mailOptions);
             console.log('✅ Email sent successfully:', result.messageId);
             return true;
-        } catch (error: any) {
-            console.error('❌ Email sending failed:', error.message || error);
+        } catch (error: unknown) {
+            const err = error as { message?: string; responseCode?: number; response?: string };
+            console.error('❌ Email sending failed:', err.message || error);
             
             // Check for specific Zoho error
-            if (error.responseCode === 550 && error.response.includes('Unusual sending activity')) {
+            if (err.responseCode === 550 && err.response?.includes('Unusual sending activity')) {
                 console.error('⚠️ ACTION REQUIRED: Your Zoho account has been flagged for unusual activity. Please log in to Zoho webmail and verify your account.');
             }
             
