@@ -3,9 +3,33 @@ import { supabase } from '@/lib/supabase'
 import { emailService } from '@/lib/emailService'
 
 function getClientIp(request: NextRequest): string {
-    const forwarded = request.headers.get('x-forwarded-for')
-    const realIp = request.headers.get('x-real-ip')
-    return forwarded?.split(',')[0] || realIp || 'unknown'
+    const headersToCheck = [
+        'x-forwarded-for', // Standard proxy header
+        'x-real-ip',      // Nginx/common reverse proxy
+        'cf-connecting-ip', // Cloudflare
+        'true-client-ip',   // Akamai/Cloudfront
+        'client-ip',
+        'x-client-ip',
+        'x-cluster-client-ip',
+        'fastly-client-ip'
+    ];
+
+    for (const header of headersToCheck) {
+        const value = request.headers.get(header);
+        if (value) {
+            // Some headers can be a comma-separated list of IPs
+            const address = value.split(',')[0].trim();
+            if (address && address.toLowerCase() !== 'unknown') {
+                return address;
+            }
+        }
+    }
+
+    // Try Next.js internal IP detection (Vercel)
+    const nextIp = (request as any).ip;
+    if (nextIp && nextIp.toLowerCase() !== 'unknown') return nextIp;
+
+    return 'unknown';
 }
 
 function getUserAgent(request: NextRequest): string {
@@ -27,6 +51,40 @@ export async function POST(request: NextRequest) {
 
         const ip = getClientIp(request)
         const userAgent = getUserAgent(request)
+
+        // --- RATE LIMITING ---
+        // 1. IP-based rate limit: Max 5 attempts per 10 minutes from same IP
+        const TEN_MINUTES_AGO = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+        const { count: ipCount, error: ipCountError } = await supabase
+            .from('newsletter_subscriptions')
+            .select('*', { count: 'exact', head: true })
+            .eq('ip_address', ip)
+            .gte('subscribed_at', TEN_MINUTES_AGO)
+
+        if (!ipCountError && ipCount !== null && ipCount >= 5) {
+            console.warn(`[Newsletter] Rate limit triggered for IP: ${ip}`)
+            return NextResponse.json(
+                { error: 'Too many subscription attempts. Please try again in 10 minutes.' },
+                { status: 429 }
+            )
+        }
+
+        // 2. Global rate limit: Max 50 attempts per hour across all IPs
+        // This protects the email service from being used for mass spam
+        const ONE_HOUR_AGO = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+        const { count: globalCount, error: globalError } = await supabase
+            .from('newsletter_subscriptions')
+            .select('*', { count: 'exact', head: true })
+            .gte('subscribed_at', ONE_HOUR_AGO)
+
+        if (!globalError && globalCount !== null && globalCount >= 50) {
+            console.error('[Newsletter] Global rate limit reached!')
+            return NextResponse.json(
+                { error: 'Newsletter system is temporarily under heavy load. Please try again later.' },
+                { status: 429 }
+            )
+        }
+        // --- END RATE LIMITING ---
 
         // Check if email already exists
         const { data: existing } = await supabase

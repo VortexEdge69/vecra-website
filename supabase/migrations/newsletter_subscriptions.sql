@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS newsletter_subscriptions (
 
 -- Create index for faster email lookups
 CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscriptions(email);
+CREATE INDEX IF NOT EXISTS idx_newsletter_ip ON newsletter_subscriptions(ip_address);
 
 -- Enable Row Level Security
 ALTER TABLE newsletter_subscriptions ENABLE ROW LEVEL SECURITY;
