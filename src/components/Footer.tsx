@@ -5,12 +5,21 @@ import { useState } from "react";
 
 export default function Footer() {
     const [email, setEmail] = useState("");
+    const [honey, setHoney] = useState("");
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     const handleSubscribe = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email) return;
+
+        // Form-level honeypot check (redundant but good for UX if needed)
+        if (honey) {
+            setMessage({ type: 'success', text: 'Successfully subscribed! Check your email.' });
+            setEmail("");
+            setHoney("");
+            return;
+        }
 
         setLoading(true);
         setMessage(null);
@@ -19,7 +28,7 @@ export default function Footer() {
             const res = await fetch('/api/newsletter', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email, firstName: honey })
             });
 
             const data = await res.json();
@@ -123,6 +132,16 @@ export default function Footer() {
                     <p className="text-brand-muted text-sm mb-6">Subscribe to receive product updates, infrastructure announcements, and exclusive offers.</p>
 
                     <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                        <div className="hidden" aria-hidden="true">
+                            <input
+                                type="text"
+                                name="firstName"
+                                tabIndex={-1}
+                                value={honey}
+                                onChange={(e) => setHoney(e.target.value)}
+                                autoComplete="off"
+                            />
+                        </div>
                         <input
                             type="email"
                             value={email}

@@ -26,7 +26,7 @@ function getClientIp(request: NextRequest): string {
     }
 
     // Try Next.js internal IP detection (Vercel)
-    const nextIp = (request as any).ip;
+    const nextIp = (request as { ip?: string }).ip;
     if (nextIp && nextIp.toLowerCase() !== 'unknown') return nextIp;
 
     return 'unknown';
@@ -39,16 +39,37 @@ function getUserAgent(request: NextRequest): string {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { email } = body
+        const { email, firstName } = body
 
-        // Validate email
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        // 1. Honeypot check (firstName is hidden from users, only bots fill it)
+        if (firstName) {
+            console.warn(`[Newsletter] Honeypot triggered from IP: ${getClientIp(request)}`)
             return NextResponse.json(
-                { error: 'Valid email is required' },
+                {
+                    message: 'Successfully subscribed! Check your email for confirmation.',
+                    success: true
+                },
+                { status: 200 }
+            )
+        }
+
+        // 2. Enhanced Email validation
+        if (!email || !/^[a-zA-Z0-9._%+-]+@(?!(?:[a-zA-Z0-9-]+\.)*internal)(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,15}$/.test(email)) {
+            return NextResponse.json(
+                { error: 'Please enter a valid email address' },
                 { status: 400 }
             )
         }
 
+        // 3. Block common spam/fake patterns (e.g. very long prefixes)
+        const [localPart] = email.split('@')
+        if (localPart.length > 64) {
+            return NextResponse.json(
+                { error: 'Email address is too long' },
+                { status: 400 }
+            )
+        }
+        
         const ip = getClientIp(request)
         const userAgent = getUserAgent(request)
 
