@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { isSupabaseConfigured, supabase } from '@/lib/supabase'
 import { emailService } from '@/lib/emailService'
 
 function getClientIp(request: NextRequest): string {
@@ -38,6 +38,12 @@ function getUserAgent(request: NextRequest): string {
 
 export async function POST(request: NextRequest) {
     try {
+        if (!isSupabaseConfigured) {
+            return NextResponse.json(
+                { error: 'Newsletter signup is temporarily unavailable. Please contact support@vecrahost.in.' },
+                { status: 503 }
+            )
+        }
         // 1. Origin/Referer Validation (Prevent cross-site and external API calls)
         const origin = request.headers.get('origin')
         const referer = request.headers.get('referer')
