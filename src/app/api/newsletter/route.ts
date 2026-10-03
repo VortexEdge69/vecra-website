@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 import { emailService } from '@/lib/emailService'
 
 function getClientIp(request: NextRequest): string {
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         if (action === 'request-otp') {
             // Rate limit: Max 3 OTP requests per 10 seconds per IP
             const RECENT_LIMIT = new Date(Date.now() - 10 * 1000).toISOString()
-            const { count: otpCount, error: otpLimitError } = await supabase
+            const { count: otpCount, error: otpLimitError } = await supabaseAdmin
                 .from('newsletter_otps')
                 .select('*', { count: 'exact', head: true })
                 .eq('ip_address', ip)
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
             const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
             const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 minutes
 
-            const { error: insertError } = await supabase
+            const { error: insertError } = await supabaseAdmin
                 .from('newsletter_otps')
                 .insert([
                     {
@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
             if (!otp) return NextResponse.json({ error: 'Verification code is required' }, { status: 400 })
 
             // Find the most recent unverified OTP for this email
-            const { data: otpRecords, error: fetchError } = await supabase
+            const { data: otpRecords, error: fetchError } = await supabaseAdmin
                 .from('newsletter_otps')
                 .select('*')
                 .eq('email', email)
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
             }
 
             // Mark OTP as verified
-            await supabase
+            await supabaseAdmin
                 .from('newsletter_otps')
                 .update({ verified: true })
                 .eq('id', record.id)
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
             const userAgent = getUserAgent(request)
             
             // Check if email already exists in main table
-            const { data: existing } = await supabase
+            const { data: existing } = await supabaseAdmin
                 .from('newsletter_subscriptions')
                 .select('email, status')
                 .eq('email', email)
@@ -192,14 +192,14 @@ export async function POST(request: NextRequest) {
                     return NextResponse.json({ message: 'You are already subscribed!', success: true }, { status: 200 })
                 } else {
                     // Reactivate
-                    await supabase
+                    await supabaseAdmin
                         .from('newsletter_subscriptions')
                         .update({ status: 'active', subscribed_at: new Date().toISOString() })
                         .eq('email', email)
                 }
             } else {
                 // New subscription
-                await supabase
+                await supabaseAdmin
                     .from('newsletter_subscriptions')
                     .insert([{ email, ip_address: ip, user_agent: userAgent, status: 'active' }])
             }
