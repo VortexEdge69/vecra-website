@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/vecraSymbol.png",
   },
-  canonical: "https://vecrahost.in",
   openGraph: {
     type: "website",
     locale: "en_IN",
