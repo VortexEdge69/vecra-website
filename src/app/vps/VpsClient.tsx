@@ -1,7 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Footer from "@/components/Footer";
-import { supabase } from "@/lib/supabase";
 
 interface VpsPlan {
     plan_id: string;
@@ -11,37 +10,69 @@ interface VpsPlan {
     base_price: number;
     base_storage: number;
     is_active: boolean;
-    show_on_plans?: boolean;
-    show_on_home?: boolean;
-    is_out_of_stock?: boolean;
-    out_of_stock?: boolean;
 }
+
+// Approved VPS pricing plans (hardcoded per VEC-24)
+const HARDCODED_VPS_PLANS: VpsPlan[] = [
+    {
+        plan_id: "starter",
+        name: "Starter",
+        cpu: 4,
+        ram: 8,
+        base_price: 1299,
+        base_storage: 100,
+        is_active: true,
+    },
+    {
+        plan_id: "lite",
+        name: "Lite",
+        cpu: 6,
+        ram: 12,
+        base_price: 1799,
+        base_storage: 200,
+        is_active: true,
+    },
+    {
+        plan_id: "growth",
+        name: "Growth",
+        cpu: 8,
+        ram: 24,
+        base_price: 3299,
+        base_storage: 300,
+        is_active: true,
+    },
+    {
+        plan_id: "pro",
+        name: "Pro",
+        cpu: 12,
+        ram: 48,
+        base_price: 5799,
+        base_storage: 400,
+        is_active: true,
+    },
+    {
+        plan_id: "business",
+        name: "Business",
+        cpu: 16,
+        ram: 64,
+        base_price: 8499,
+        base_storage: 500,
+        is_active: true,
+    },
+    {
+        plan_id: "enterprise",
+        name: "Enterprise",
+        cpu: 18,
+        ram: 96,
+        base_price: 11299,
+        base_storage: 600,
+        is_active: true,
+    },
+];
 
 export default function VpsClient() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "quarterly" | "yearly">("quarterly");
-    const [allPlans, setAllPlans] = useState<VpsPlan[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchPlans = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('vps_plans')
-                    .select('*');
-
-                if (!error && data) {
-                    const sorted = (data as VpsPlan[]).sort((a, b) => a.base_price - b.base_price);
-                    const allowedPlans = sorted.filter((p) => p.show_on_plans !== false);
-                    setAllPlans(allowedPlans);
-                }
-            } catch (err) {
-                console.error("Failed to fetch plans", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchPlans();
-    }, []);
+    const allPlans = HARDCODED_VPS_PLANS;
 
     const getPlanUrl = (plan: VpsPlan) => {
         const baseUrl = "https://portal.vecrahost.in/vps";
@@ -98,16 +129,10 @@ export default function VpsClient() {
 
             <section className="py-24 px-6">
                 <div className="max-w-7xl mx-auto">
-                    <div className={`grid gap-8 mb-16 ${isLoading || allPlans.length === 3 ? 'grid-cols-1 lg:grid-cols-3' :
-                        allPlans.length === 1 ? 'grid-cols-1 max-w-md mx-auto w-full' :
-                            allPlans.length === 2 ? 'grid-cols-1 lg:grid-cols-2 max-w-4xl mx-auto w-full' :
-                                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                        }`}>
-                        {isLoading ? (
-                            <div className="col-span-full py-20 text-center text-brand-muted">Loading configurations...</div>
-                        ) : allPlans.map((plan, index) => {
+                    <div className={`grid gap-8 mb-16 grid-cols-1 md:grid-cols-2 lg:grid-cols-3`}>
+                        {allPlans.map((plan, index) => {
                             const isFeatured = index === Math.floor(allPlans.length / 2); // Highlight the middle plan by default if no explicit logic
-                            const isOutOfStock = plan.is_active === false || plan.is_out_of_stock === true || plan.out_of_stock === true;
+                            const isOutOfStock = !plan.is_active;
                             return (
                                 <div
                                     key={plan.plan_id}
@@ -128,6 +153,7 @@ export default function VpsClient() {
                                             <span className="text-brand-muted text-sm">/mo</span>
                                         </div>
                                         <p className="text-[10px] text-brand-muted uppercase font-bold mt-2 tracking-widest">Billed {billingCycle}</p>
+                                        <p className="text-[9px] text-brand-muted mt-3">+18% GST applicable at checkout</p>
                                     </div>
                                     <div className="space-y-4 mb-10 flex-grow">
                                         <div className="flex justify-between items-center py-2 border-b border-brand-border">
