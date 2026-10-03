@@ -1,7 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
+import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
+
+export const metadata: Metadata = {
+  title: "VPS Hosting in India | Enterprise Cloud Servers | VecraHost",
+  description: "Deploy reliable VPS hosting in India with enterprise-grade hardware, dedicated resources, 1Gbps uplink, instant provisioning, and 99.9% uptime SLA.",
+  keywords: "VPS hosting India, cloud VPS, Indian VPS hosting, dedicated resources, NVMe VPS, Linux VPS, enterprise hosting",
+  canonical: "https://vecrahost.in/vps",
+  openGraph: {
+    title: "VPS Hosting in India | Enterprise Cloud Servers | VecraHost",
+    description: "Deploy reliable VPS hosting in India with enterprise-grade hardware, dedicated resources, and 99.9% uptime SLA.",
+    type: "website",
+    url: "https://vecrahost.in/vps",
+  },
+};
 
 interface VpsPlan {
     plan_id: string;
