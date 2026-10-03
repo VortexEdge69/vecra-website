@@ -1,0 +1,20 @@
+{
+  "name": "vecrahost-provisioning",
+  "version": "1.0.0",
+  "description": "VecraHost Contabo VPS auto-provisioning service",
+  "type": "module",
+  "main": "lib/provisioner.js",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "dev": "node --watch lib/provisioner.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
