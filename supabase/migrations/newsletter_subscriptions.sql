@@ -14,21 +14,22 @@ CREATE TABLE IF NOT EXISTS newsletter_subscriptions (
 CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscriptions(email);
 CREATE INDEX IF NOT EXISTS idx_newsletter_ip ON newsletter_subscriptions(ip_address);
 
--- Enable Row Level Security
+-- Enable Row Level Security.
+--
+-- DO NOT add `TO anon` policies here. This table holds subscriber PII (email,
+-- IP address, user-agent) and the anon key ships in the public JS bundle
+-- (NEXT_PUBLIC_SUPABASE_ANON_KEY), so an `anon` policy IS a public policy: the
+-- original `USING (true)` policies let anyone dump the whole subscriber list
+-- and mass-insert rows via PostgREST, bypassing every control in
+-- /api/newsletter.
+--
+-- Intentionally NO policies. With RLS enabled and no policies, anon and
+-- authenticated are denied by default, while the server's service_role client
+-- (BYPASSRLS) retains full access. All application access goes through
+-- `supabaseAdmin` in src/lib/supabase.ts.
+--
+-- See 20261003000000_security_hardening.sql for the lockdown applied to
+-- projects that already had the permissive policies.
 ALTER TABLE newsletter_subscriptions ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow inserts (for new subscriptions)
-CREATE POLICY "Allow public inserts" ON newsletter_subscriptions
-  FOR INSERT TO anon, authenticated
-  WITH CHECK (true);
-
--- Create policy to allow reads (for checking existing subscriptions)
-CREATE POLICY "Allow public reads" ON newsletter_subscriptions
-  FOR SELECT TO anon, authenticated
-  USING (true);
-
--- Create policy to allow updates (for reactivating subscriptions)
-CREATE POLICY "Allow public updates" ON newsletter_subscriptions
-  FOR UPDATE TO anon, authenticated
-  USING (true)
-  WITH CHECK (true);
+REVOKE ALL ON newsletter_subscriptions FROM anon, authenticated;

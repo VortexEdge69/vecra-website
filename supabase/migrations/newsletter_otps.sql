@@ -4,7 +4,10 @@
 CREATE TABLE IF NOT EXISTS newsletter_otps (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   email TEXT NOT NULL,
-  otp TEXT NOT NULL,
+  otp TEXT,
+  otp_hash TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  consumed_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
   ip_address TEXT,
@@ -14,22 +17,24 @@ CREATE TABLE IF NOT EXISTS newsletter_otps (
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_newsletter_otps_email ON newsletter_otps(email);
 CREATE INDEX IF NOT EXISTS idx_newsletter_otps_expires ON newsletter_otps(expires_at);
+CREATE INDEX IF NOT EXISTS idx_newsletter_otps_lookup
+  ON newsletter_otps (email, consumed_at, created_at DESC);
 
--- Enable Row Level Security
+-- Enable Row Level Security.
+--
+-- DO NOT add `TO anon` policies here. This table holds verification
+-- authenticators, and the anon key ships in the public JS bundle
+-- (NEXT_PUBLIC_SUPABASE_ANON_KEY), so an `anon` policy IS a public policy:
+-- `ENABLE ROW LEVEL SECURITY` plus `USING (true)` for anon is equivalent to no
+-- RLS at all and let anyone read any OTP in plaintext via PostgREST.
+--
+-- Intentionally NO policies. With RLS enabled and no policies, anon and
+-- authenticated are denied by default, while the server's service_role client
+-- (BYPASSRLS) retains full access. All application access goes through
+-- `supabaseAdmin` in src/lib/supabase.ts.
+--
+-- See 20261003000000_security_hardening.sql for the lockdown applied to
+-- projects that already had the permissive policies.
 ALTER TABLE newsletter_otps ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow inserts (for requesting OTPs)
-CREATE POLICY "Allow public inserts" ON newsletter_otps
-  FOR INSERT TO anon, authenticated
-  WITH CHECK (true);
-
--- Create policy to allow reads (for verifying OTPs)
-CREATE POLICY "Allow public reads" ON newsletter_otps
-  FOR SELECT TO anon, authenticated
-  USING (true);
-
--- Create policy to allow updates (for marking as verified)
-CREATE POLICY "Allow public updates" ON newsletter_otps
-  FOR UPDATE TO anon, authenticated
-  USING (true)
-  WITH CHECK (true);
+REVOKE ALL ON newsletter_otps FROM anon, authenticated;
