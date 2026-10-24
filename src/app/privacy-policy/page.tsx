@@ -1,4 +1,13 @@
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How VecraHost collects, uses and protects your personal data, and how to exercise your data rights.",
+  alternates: { canonical: "/privacy-policy" },
+  openGraph: { title: "Privacy Policy", description: "How VecraHost collects, uses and protects your personal data, and how to exercise your data rights.", url: "/privacy-policy" },
+};
+
 import Footer from "@/components/Footer";
 
 const PrivacyPolicy = () => {
