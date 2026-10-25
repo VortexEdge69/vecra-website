@@ -1,4 +1,13 @@
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "The terms that govern your use of VecraHost VPS hosting, domains and related services.",
+  alternates: { canonical: "/terms-of-service" },
+  openGraph: { title: "Terms of Service", description: "The terms that govern your use of VecraHost VPS hosting, domains and related services.", url: "/terms-of-service" },
+};
+
 import Footer from "@/components/Footer";
 
 const TermsOfService = () => {

@@ -1,4 +1,13 @@
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Refund and Cancellation Policy",
+  description: "VecraHost refund eligibility, cancellation process and timelines for VPS hosting and other services.",
+  alternates: { canonical: "/refund-and-cancellation-policy" },
+  openGraph: { title: "Refund and Cancellation Policy", description: "VecraHost refund eligibility, cancellation process and timelines for VPS hosting and other services.", url: "/refund-and-cancellation-policy" },
+};
+
 import Footer from "@/components/Footer";
 
 const RefundPolicy = () => {

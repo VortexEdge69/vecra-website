@@ -1,95 +1,62 @@
 import "./globals.css";
 import Script from "next/script";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Navbar from "@/components/Navbar";
 import CookieConsent from "@/components/CookieConsent";
+import JsonLd from "@/components/JsonLd";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, organizationJsonLd, websiteJsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "VecraHost | Enterprise VPS & Cloud Hosting Solutions",
+    default: "VecraHost | High-Performance VPS Hosting in India",
     template: "%s | VecraHost",
   },
-  description:
-    "VecraHost provides high-performance enterprise VPS, Cloud hosting, and Domain services in India. Low latency, 99.9% uptime, and 24/7 dedicated support for mission-critical infrastructure.",
-  keywords:
-    "vecrahost, enterprise vps india, cloud hosting india, high performance vps, dedicated resources, low latency hosting mumbai, business cloud servers, nvme storage hosting",
-  icons: {
-    icon: "/vecraSymbol.png",
-  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "VecraHost",
+    "VPS hosting India",
+    "cloud VPS India",
+    "NVMe VPS",
+    "Indian IP VPS",
+    "low latency hosting India",
+    "Linux VPS",
+    "business cloud servers",
+  ],
+  alternates: { canonical: "/" },
+  icons: { icon: "/vecraSymbol.png", apple: "/vecraSymbol.png" },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://vecrahost.in",
-    siteName: "VecraHost",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: "VecraHost | High-Performance VPS Hosting in India",
+    description: SITE_DESCRIPTION,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "VecraHost | High-Performance VPS Hosting in India",
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  category: "technology",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#050a10",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark scroll-smooth">
+    <html lang="en-IN" className="dark scroll-smooth">
       <head>
-        {/* JSON-LD Schema - Organization */}
-        <Script
-          id="org-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "VecraHost",
-              url: "https://vecrahost.in",
-              logo: "https://vecrahost.in/vecraSymbol.png",
-              description: "Enterprise VPS and Cloud Hosting Solutions",
-              sameAs: [
-                "https://www.linkedin.com/company/vecrahost",
-                "https://twitter.com/vecrahost"
-              ],
-              contactPoint: {
-                "@type": "ContactPoint",
-                contactType: "Customer Support",
-                telephone: "+91-XXXXXXXXXX",
-                email: "support@vecrahost.in"
-              }
-            })
-          }}
-        />
-
-        {/* JSON-LD Schema - LocalBusiness */}
-        <Script
-          id="local-business-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              name: "VecraHost",
-              image: "https://vecrahost.in/vecraSymbol.png",
-              description: "Enterprise-grade VPS and Cloud Hosting in India with 99.9% uptime SLA",
-              url: "https://vecrahost.in",
-              telephone: "+91-XXXXXXXXXX",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "Vijayawada",
-                addressLocality: "Vijayawada",
-                addressRegion: "AP",
-                postalCode: "520003",
-                addressCountry: "IN"
-              },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: "16.5062",
-                longitude: "80.6480"
-              },
-              areaServed: ["IN", "AP"],
-              priceRange: "₹",
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "4.8",
-                reviewCount: "150"
-              }
-            })
-          }}
-        />
+        <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
 
         {/* Google Analytics */}
         <Script

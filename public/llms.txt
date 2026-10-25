@@ -1,0 +1,20 @@
+# VecraHost
+
+> VecraHost is an Indian hosting provider based in Vijayawada, Andhra Pradesh. It sells KVM VPS hosting with dedicated vCPU and RAM, NVMe storage, Indian IP addresses and a 99.9% uptime target. Plans are billed in INR through the VecraHost billing portal.
+
+## Products
+
+- [VPS Hosting](https://vecrahost.in/vps): Linux virtual private servers in India with dedicated resources, NVMe SSD storage, full root access and instant provisioning. Current plans and INR prices are listed on this page.
+- [Web Hosting](https://vecrahost.in/web-hosting): Shared web hosting for business websites. Coming soon.
+- [Domains](https://vecrahost.in/domains): Domain registration with transparent renewal pricing. Coming soon.
+
+## Support
+
+- [Contact and support](https://vecrahost.in/contactus): Submit a support or sales request; the team replies by email from support@vecrahost.in.
+- [Billing portal](https://portal.vecrahost.in): Order servers, manage services and pay invoices.
+
+## Policies
+
+- [Terms of Service](https://vecrahost.in/terms-of-service)
+- [Privacy Policy](https://vecrahost.in/privacy-policy)
+- [Refund and Cancellation Policy](https://vecrahost.in/refund-and-cancellation-policy)
