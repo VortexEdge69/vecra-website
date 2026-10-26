@@ -32,33 +32,24 @@ export default function CookieConsent() {
                     exit={{ y: 100, opacity: 0 }}
                     className="fixed bottom-6 left-6 right-6 z-[100] md:left-auto md:right-8 md:max-w-md"
                 >
-                    <div className="bg-brand-surface border border-brand-border p-6 shadow-2xl backdrop-blur-xl">
-                        <div className="flex items-start gap-4 mb-6">
-                            <div className="w-10 h-10 bg-brand-primary/10 border border-brand-primary/20 flex-shrink-0 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                            </div>
-                            <div className="flex-1">
-                                <h4 className="text-sm font-bold uppercase tracking-widest text-brand-text mb-1">Privacy Preference</h4>
-                                <p className="text-brand-muted text-xs leading-relaxed">
-                                    We use essential cookies to ensure the security and functionality of our infrastructure services. 
-                                    By continuing, you agree to our <a href="/privacy-policy" className="text-brand-primary hover:underline">Privacy Policy</a>.
-                                </p>
-                            </div>
-                        </div>
+                    <div className="rounded-3xl border border-[oklch(0.34_0.02_265)] bg-[oklch(0.19_0.014_265)]/95 p-6 text-[oklch(0.97_0.006_95)] shadow-2xl backdrop-blur-xl">
+                        <h4 className="mb-2 text-base font-semibold">We use cookies</h4>
+                        <p className="mb-5 text-sm leading-relaxed text-[oklch(0.75_0.015_265)]">
+                            Essential cookies keep our services secure and working. By continuing, you agree to our{" "}
+                            <a href="/privacy-policy" className="text-[oklch(0.9_0.19_128)] hover:underline">Privacy Policy</a>.
+                        </p>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <button
                                 onClick={handleAccept}
-                                className="btn-primary flex-1 py-3 text-xs font-black uppercase tracking-widest"
+                                className="flex-1 rounded-full bg-[oklch(0.9_0.19_128)] px-5 py-3 text-sm font-semibold text-[oklch(0.17_0.02_265)] transition hover:bg-[oklch(0.95_0.15_128)] active:scale-[.97]"
                             >
-                                Accept All
+                                Accept all
                             </button>
                             <button
                                 onClick={handleDecline}
-                                className="btn-secondary flex-1 py-3 text-xs font-black uppercase tracking-widest"
+                                className="flex-1 rounded-full border border-[oklch(0.34_0.02_265)] px-5 py-3 text-sm font-semibold transition hover:border-[oklch(0.97_0.006_95)] active:scale-[.97]"
                             >
-                                Essential Only
+                                Essential only
                             </button>
                         </div>
                     </div>

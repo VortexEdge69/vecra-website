@@ -23,6 +23,9 @@ export default function Navbar() {
         { name: "Domains", href: "/domains" },
     ];
 
+    // the homepage ships its own header
+    if (pathname === "/") return null;
+
     return (
         <>
             <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${isScrolled ? 'bg-brand-bg/95 border-brand-border py-3 shadow-lg backdrop-blur-sm' : 'bg-transparent border-transparent py-5'
