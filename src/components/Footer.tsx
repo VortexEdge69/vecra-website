@@ -114,6 +114,8 @@ export default function Footer() {
                 <div className="space-y-6">
                     <h4 className="text-sm font-bold text-brand-text uppercase tracking-widest">Solutions</h4>
                     <ul className="space-y-4 text-sm">
+                        <li><Link href="/#services" className="text-brand-muted hover:text-brand-primary transition-colors">Website Design</Link></li>
+                        <li><Link href="/#pricing" className="text-brand-muted hover:text-brand-primary transition-colors">Pricing</Link></li>
                         <li><Link href="/vps" className="text-brand-muted hover:text-brand-primary transition-colors">VPS Hosting</Link></li>
                         <li><Link href="/web-hosting" className="text-brand-muted hover:text-brand-primary transition-colors">Web Hosting</Link></li>
                         <li><Link href="/domains" className="text-brand-muted hover:text-brand-primary transition-colors">Domain Names</Link></li>
@@ -124,6 +126,7 @@ export default function Footer() {
                 <div className="space-y-6">
                     <h4 className="text-sm font-bold text-brand-text uppercase tracking-widest">Resources</h4>
                     <ul className="space-y-4 text-sm">
+                        <li><Link href="/#quote" className="text-brand-muted hover:text-brand-primary transition-colors">Get a Quote</Link></li>
                         <li><Link href="/contactus" className="text-brand-muted hover:text-brand-primary transition-colors">Support Center</Link></li>
                         <li><a href="https://portal.vecrahost.in" className="text-brand-muted hover:text-brand-primary transition-colors">Billing Portal</a></li>
                     </ul>
@@ -193,7 +196,7 @@ export default function Footer() {
                                 placeholder="Enter your email address"
                                 required
                                 disabled={loading}
-                                className="flex-1 px-4 py-3 bg-brand-surface border border-brand-border text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-colors disabled:opacity-50"
+                                className="flex-1 px-5 py-3 rounded-full bg-brand-surface border border-brand-border text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-colors disabled:opacity-50"
                             />
                             <button
                                 type="submit"
@@ -213,7 +216,7 @@ export default function Footer() {
                                     placeholder="Enter 6-digit code"
                                     required
                                     disabled={loading}
-                                    className={`flex-1 w-full px-4 py-3 bg-brand-surface border border-brand-primary text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-all font-mono text-center disabled:opacity-50 ${otp ? 'tracking-[0.5em] font-bold' : 'tracking-normal'}`}
+                                    className={`flex-1 w-full px-5 py-3 rounded-full bg-brand-surface border border-brand-primary text-brand-text text-sm focus:outline-none focus:border-brand-primary transition-all font-mono text-center disabled:opacity-50 ${otp ? 'tracking-[0.5em] font-bold' : 'tracking-normal'}`}
                                 />
                                 <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <button

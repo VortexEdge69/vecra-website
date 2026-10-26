@@ -42,7 +42,7 @@ const HardwareAnimation = () => {
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
                     {/* Simple Abstract "App" Icon */}
-                    <svg className="w-8 h-8 md:w-10 md:h-10 drop-shadow-[0_0_8px_rgba(0,118,254,0.8)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-8 h-8 md:w-10 md:h-10 drop-shadow-[0_0_8px_rgba(184,242,61,0.8)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
 

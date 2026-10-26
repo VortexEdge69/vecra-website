@@ -18,9 +18,11 @@ export default function Navbar() {
     }, []);
 
     const navLinks = [
+        { name: "Websites", href: "/#services" },
         { name: "VPS Hosting", href: "/vps" },
         { name: "Web Hosting", href: "/web-hosting" },
         { name: "Domains", href: "/domains" },
+        { name: "Contact", href: "/contactus" },
     ];
 
     // the homepage ships its own header
@@ -28,7 +30,7 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${isScrolled ? 'bg-brand-bg/95 border-brand-border py-3 shadow-lg backdrop-blur-sm' : 'bg-transparent border-transparent py-5'
+            <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${isScrolled ? 'bg-brand-bg/80 border-brand-border py-3 backdrop-blur-xl' : 'bg-transparent border-transparent py-5'
                 }`}>
                 <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
                     {/* Logo */}
@@ -50,7 +52,7 @@ export default function Navbar() {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className={`px-4 py-2 text-sm font-medium transition-colors ${pathname === link.href ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-text'
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors hover:bg-brand-surface ${pathname === link.href && !link.href.includes('#') ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-text'
                                     }`}
                             >
                                 {link.name}
@@ -92,15 +94,16 @@ export default function Navbar() {
                                 key={link.name}
                                 href={link.href}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className={`text-xl font-semibold py-2 border-b border-brand-border ${pathname === link.href ? 'text-brand-primary' : 'text-brand-text'
+                                className={`text-xl font-semibold py-2 border-b border-brand-border ${pathname === link.href && !link.href.includes('#') ? 'text-brand-primary' : 'text-brand-text'
                                     }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
+                        <Link href="/#quote" onClick={() => setMobileMenuOpen(false)} className="btn-primary w-full text-center py-4 mt-6">Get a quote</Link>
                         <a
                             href="https://portal.vecrahost.in"
-                            className="btn-primary w-full text-center py-4 mt-6"
+                            className="btn-secondary w-full text-center py-4"
                         >
                             Client Portal
                         </a>

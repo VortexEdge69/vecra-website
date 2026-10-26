@@ -10,15 +10,15 @@ module.exports = {
         extend: {
             colors: {
                 brand: {
-                    bg: '#050a10',
-                    surface: '#0b1219',
-                    primary: '#0076fe',
-                    secondary: '#005ac1',
-                    border: '#1e293b',
-                    text: '#f8fafc',
-                    muted: '#94a3b8',
+                    bg: '#0d0f16',
+                    surface: '#161923',
+                    primary: '#b8f23d',
+                    secondary: '#d3fa7c',
+                    border: '#2b2f3d',
+                    text: '#f6f5ef',
+                    muted: '#9a9fb0',
                 },
-                accent: '#0076fe',
+                accent: '#b8f23d',
             },
             spacing: {
                 'px-grid': '8px',

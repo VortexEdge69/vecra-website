@@ -73,19 +73,19 @@ export default function VpsClient() {
                     <div className="mt-12 inline-flex items-center bg-brand-surface p-1 border border-brand-border rounded-sm">
                         <button
                             onClick={() => setBillingCycle("monthly")}
-                            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${billingCycle === 'monthly' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-text'}`}
+                            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${billingCycle === 'monthly' ? 'bg-brand-primary text-brand-bg' : 'text-brand-muted hover:text-brand-text'}`}
                         >
                             Monthly
                         </button>
                         <button
                             onClick={() => setBillingCycle("quarterly")}
-                            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${billingCycle === 'quarterly' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-text'}`}
+                            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${billingCycle === 'quarterly' ? 'bg-brand-primary text-brand-bg' : 'text-brand-muted hover:text-brand-text'}`}
                         >
                             Quarterly
                         </button>
                         <button
                             onClick={() => setBillingCycle("yearly")}
-                            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${billingCycle === 'yearly' ? 'bg-brand-primary text-white' : 'text-brand-muted hover:text-brand-text'}`}
+                            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${billingCycle === 'yearly' ? 'bg-brand-primary text-brand-bg' : 'text-brand-muted hover:text-brand-text'}`}
                         >
                             Yearly
                         </button>

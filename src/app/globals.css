@@ -4,12 +4,12 @@
 
 @layer base {
   :root {
-    --brand-bg: #050a10;
-    --brand-surface: #0b1219;
-    --brand-primary: #0076fe;
-    --brand-text: #f8fafc;
-    --brand-muted: #94a3b8;
-    --brand-border: #1e293b;
+    --brand-bg: #0d0f16;
+    --brand-surface: #161923;
+    --brand-primary: #b8f23d;
+    --brand-text: #f6f5ef;
+    --brand-muted: #9a9fb0;
+    --brand-border: #2b2f3d;
   }
 
   body {
@@ -25,15 +25,15 @@
 
 @layer components {
   .btn-primary {
-    @apply px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-semibold transition-all duration-200 flex items-center justify-center gap-2;
+    @apply px-6 py-3 rounded-full bg-brand-primary hover:bg-brand-secondary text-brand-bg font-semibold active:scale-[.97] transition-all duration-200 flex items-center justify-center gap-2;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-transparent border border-brand-border hover:bg-white/5 text-brand-text font-semibold transition-all duration-200 flex items-center justify-center gap-2;
+    @apply px-6 py-3 rounded-full bg-transparent border border-brand-border hover:border-brand-text text-brand-text font-semibold transition-all duration-200 flex items-center justify-center gap-2;
   }
 
   .card-enterprise {
-    @apply bg-brand-surface border border-brand-border p-6 shadow-sm hover:border-brand-primary/50 transition-colors duration-300;
+    @apply rounded-2xl bg-brand-surface border border-brand-border p-6 shadow-sm hover:border-brand-primary/50 transition-colors duration-300;
   }
 
   .grid-enterprise {
@@ -57,8 +57,8 @@
 
 /* Eliminate generic template look - remove all excessive blurs/animations */
 .bg-grid-pattern {
-  background-image: linear-gradient(to right, #1e293b 1px, transparent 1px),
-    linear-gradient(to bottom, #1e293b 1px, transparent 1px);
+  background-image: linear-gradient(to right, #2b2f3d 1px, transparent 1px),
+    linear-gradient(to bottom, #2b2f3d 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
 }

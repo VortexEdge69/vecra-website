@@ -14,7 +14,7 @@ export default function FAQItem({ question, answer }: FAQItemProps) {
         <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl mb-4 overflow-hidden shadow-md">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex justify-between items-center px-6 py-4 text-left text-white font-medium focus:outline-none hover:text-accent transition-colors duration-200"
+                className="w-full flex justify-between items-center px-6 py-4 text-left text-brand-text font-medium focus:outline-none hover:text-accent transition-colors duration-200"
                 aria-expanded={isOpen}
                 aria-controls={`faq-answer-${question.replace(/\s+/g, '-').toLowerCase()}`}
             >

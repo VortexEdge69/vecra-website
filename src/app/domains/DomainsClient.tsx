@@ -209,7 +209,7 @@ export default function DomainsClient() {
                                     <button
                                         type="submit"
                                         disabled={isSearching}
-                                        className="px-10 py-4 bg-brand-primary text-white font-black text-sm uppercase tracking-widest hover:bg-brand-secondary transition-all flex items-center justify-center gap-3 disabled:opacity-70 rounded-sm"
+                                        className="px-10 py-4 bg-brand-primary text-brand-bg font-black text-sm uppercase tracking-widest hover:bg-brand-secondary transition-all flex items-center justify-center gap-3 disabled:opacity-70 rounded-sm"
                                     >
                                         {isSearching ? (
                                             <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
