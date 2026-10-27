@@ -1,4 +1,4 @@
-import { metadata } from "next";
+import type { Metadata } from "next";
 import PranaviClient from "./PranaviClient";
 
 export const metadata: Metadata = {

@@ -126,7 +126,9 @@ export default function PranaviClient() {
                   <p className="text-brand-muted text-sm">Conveniently located in Suryaraopet, Vijayawada with extended hours Mon-Sat 11:00-19:00.</p>
                 </div>
                 <div className="flex gap-4">
-                  <div className="mt-1"><svg className="w-5 h-5 text-brand-primary" fill="currentColor" viewBox="0 0 20 20"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012-2v-1a2 2 0 01-2-2H5a2 2 0 012-2zm14 0a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012-2v-1a2 2 0 01-2-2h-14a2 2 0 01-2-2z" /></div>
+                  <div className="mt-1"><svg className="w-5 h-5 text-brand-primary" fill="currentColor" viewBox="0 0 20 20"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012-2v-1a2 2 0 01-2-2H5a2 2 0 012-2zm14 0a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012-2v-1a2 2 0 01-2-2h-14a2 2 0 01-2-2z" />
+                </svg>
+              </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">Extended Business Hours</h4>
                     <p className="text-brand-muted text-sm">Open Mon-Sat 11:00-19:00 for your convenience.</p>

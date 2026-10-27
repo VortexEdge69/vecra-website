@@ -12,10 +12,10 @@ export default function Contact() {
       </Link>
       <div className="mt-6">
         <p className="text-gray-500 text-sm">
-          Sun Homeo Care<br>
-          Maruthi Nagar, Eluru Road<br>
-          Vijayawada, AP<br>
-          Phone: [Public number available]<br>
+          Sun Homeo Care<br />
+          Maruthi Nagar, Eluru Road<br />
+          Vijayawada, AP<br />
+          Phone: [Public number available]<br />
           Website: https://vecrahost.in/sun-homeo-care
         </p>
       </div>
