@@ -32,7 +32,7 @@ const SERVICES = [
 const WORKS = [
   { name: "Kreedo Sports", url: "https://kreedosports.com", img: "/work/kreedo.png", bg: SERVICES[0].c },
   { name: "Mana Urban Bowl", url: "https://mub-website-new.vercel.app", img: "/work/mub.png", bg: SERVICES[1].c },
-  { name: "Creative BRND", url: "https://creativebrnd.com", img: "/work/creativebrnd.png", bg: SERVICES[2].c },
+  { name: "Creative BRND", url: "https://brnd-website-seven.vercel.app", img: "/work/creativebrnd.png", bg: SERVICES[2].c },
   { name: "Consilli Drusti", url: "https://consillidrusti.com", img: "/work/consilli.png", bg: SERVICES[3].c },
 ];
 const STEPS = [
