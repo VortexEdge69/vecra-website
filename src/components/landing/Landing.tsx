@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Bricolage_Grotesque, JetBrains_Mono } from "next/font/google";
 import "./landing.css";
+import { PHONE, CITY, telLink, waLink, phoneText } from "@/lib/contact";
 
 const sans = Bricolage_Grotesque({ subsets: ["latin"], variable: "--vh-sans", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--vh-mono", display: "swap" });
@@ -10,9 +11,8 @@ const EZ = "cubic-bezier(.2,.8,.2,1)";
 const MONO = "var(--vh-mono),monospace";
 const ACC = "oklch(0.9 0.19 128)", INK = "oklch(0.17 0.02 265)", LINE = "oklch(0.3 0.02 265)";
 const FG = "oklch(0.97 0.006 95)", MUTED = "oklch(0.78 0.015 265)";
-// ponytail: set to a number like "919876543210" to show the WhatsApp buttons
-const WA_NUMBER = "";
-const WA_LINK = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Hi VecraHost, I would like a quote for a website.");
+const WA_NUMBER = PHONE;
+const WA_LINK = waLink("Hi VecraHost, I would like a quote for a website.");
 
 const h2Style: CSSProperties = { fontSize: "clamp(44px,7vw,104px)", lineHeight: 0.92, letterSpacing: "-0.055em", margin: 0, fontWeight: 700 };
 const pStyle: CSSProperties = { margin: 0, color: MUTED, fontSize: 18, lineHeight: 1.5 };
@@ -20,7 +20,7 @@ const sectionWrap: CSSProperties = { maxWidth: 1320, margin: "0 auto", padding: 
 const headRow: CSSProperties = { display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 24, flexWrap: "wrap", marginBottom: 48 };
 const pill = (on: boolean): CSSProperties => ({ border: on ? "2px solid " + ACC : "1px solid " + LINE, background: on ? "oklch(0.9 0.19 128 / 0.12)" : "transparent" });
 
-const NAV: [string, string][] = [["Services", "#services"], ["Work", "#work"], ["Pricing", "#pricing"], ["Hosting", "#hosting"], ["FAQ", "#faq"]];
+const NAV: [string, string][] = [["Services", "#services"], ["Work", "#work"], ["Pricing", "#pricing"], ["Hosting", "#hosting"], ["Local plan", "/local"], ["FAQ", "#faq"]];
 const SERVICES = [
   { title: "Business websites", d: "Fast, mobile-first sites that explain what you do and turn visitors into enquiries.", tags: ["5–15 pages", "CMS", "SEO"], c: ["oklch(0.55 0.2 262)", "oklch(0.4 0.18 280)"] },
   { title: "Online stores", d: "Product catalogues, carts and Razorpay checkout, ready to take orders from day one.", tags: ["Razorpay", "Inventory", "Shipping"], c: ["oklch(0.62 0.18 35)", "oklch(0.48 0.19 15)"] },
@@ -87,7 +87,7 @@ function Intro({ onDone }: { onDone: (delay: number) => void }) {
   if (gone) return null;
   return (
     <div aria-hidden style={{ position: "fixed", inset: 0, zIndex: 100, background: ACC, color: INK, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "clamp(20px,4vw,48px)", transform: out ? "translateY(-100%)" : "none", transition: "transform 1s cubic-bezier(.76,0,.24,1)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontFamily: MONO, fontSize: 13, letterSpacing: ".1em", textTransform: "uppercase" }}><span>VecraHost Studio</span><span>Loading something good</span></div>
+      <div style={{ display: "flex", justifyContent: "space-between", fontFamily: MONO, fontSize: 13, letterSpacing: ".1em", textTransform: "uppercase" }}><span>VecraHost Studio</span><span>VecraHost</span></div>
       <div style={{ fontSize: "clamp(110px,24vw,360px)", fontWeight: 800, letterSpacing: "-0.07em", lineHeight: 0.8, fontVariantNumeric: "tabular-nums" }}>{n}<span style={{ fontSize: ".35em", letterSpacing: 0 }}>%</span></div>
     </div>
   );
@@ -405,6 +405,7 @@ export default function Landing() {
               <div style={{ display: "flex", gap: 4, marginLeft: "auto" }}>
                 {NAV.map(([l, href]) => <a key={l} href={href} className="vh-navlink" style={{ padding: "8px 14px", fontSize: 15, fontWeight: 500, color: "oklch(0.8 0.015 265)", borderRadius: 999 }}>{l}</a>)}
               </div>
+              {WA_NUMBER && <a href={telLink} style={{ fontSize: 15, fontWeight: 500, color: "oklch(0.8 0.015 265)", whiteSpace: "nowrap" }}>{phoneText}</a>}
               <a data-magnet="" href="#quote" className="vh-lime" style={{ transition: `translate .35s ${EZ},background .2s`, fontSize: 15, fontWeight: 600, color: INK, background: ACC, padding: "11px 18px", borderRadius: 999 }}>Get a quote</a>
             </>
           ) : (
@@ -598,7 +599,7 @@ export default function Landing() {
             <div>
               <div style={{ display: "inline-flex", fontFamily: MONO, fontSize: 12, letterSpacing: ".1em", color: "oklch(0.86 0.08 255)", border: "1px solid oklch(0.45 0.08 262)", padding: "7px 12px", borderRadius: 999 }}>ADD-ON · WEB HOSTING</div>
               <h2 style={{ fontSize: "clamp(40px,5.4vw,76px)", lineHeight: 0.95, letterSpacing: "-0.05em", margin: "20px 0 16px", fontWeight: 700 }}>Your site, hosted in India.</h2>
-              <p style={{ margin: "0 0 28px", fontSize: 18, lineHeight: 1.55, color: "oklch(0.84 0.02 260)", maxWidth: 520 }}>Every package includes a year of hosting on our NVMe servers in Mumbai and Bangalore. Already have a site? Move it to us from ₹99/mo.</p>
+              <p style={{ margin: "0 0 28px", fontSize: 18, lineHeight: 1.55, color: "oklch(0.84 0.02 260)", maxWidth: 520 }}>Every package includes a year of hosting on our NVMe servers in Mumbai and Bangalore. Already have a site? Move it to us from ₹99/mo. Local shop or clinic? See the <a href="/local" style={{ color: ACC, textDecoration: "underline" }}>₹499/mo Local Business Plan</a>: website, hosting, updates and Google listing, all managed.</p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
                 {HOST.map((x) => {
                   const on = x.id === hostPlan;
@@ -625,7 +626,7 @@ export default function Landing() {
         <section id="quote" ref={quoteRef} style={{ ...sectionWrap, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,420px),1fr))", gap: 56, alignItems: "start" }}>
           <div>
             <h2 data-reveal="" style={{ ...h2Style, fontSize: "clamp(44px,8vw,120px)", letterSpacing: "-0.06em", margin: "0 0 24px" }}>Let&apos;s get you a <span style={{ color: ACC }}>quote.</span></h2>
-            <p data-reveal="" style={{ margin: "0 0 32px", fontSize: 19, lineHeight: 1.55, color: "oklch(0.8 0.015 265)", maxWidth: 460 }}>Answer three quick questions and share your details. We&apos;ll reply with a fixed price and timeline.</p>
+            <p data-reveal="" style={{ margin: "0 0 32px", fontSize: 19, lineHeight: 1.55, color: "oklch(0.8 0.015 265)", maxWidth: 460 }}>Answer a few quick questions and share your details. We&apos;ll reply with a fixed price and timeline.</p>
             {waShow && (
               <a data-reveal="" href={WA_LINK} target="_blank" rel="noopener" className="vh-wa" style={{ display: "inline-flex", alignItems: "center", gap: 14, padding: "16px 20px", borderRadius: 20, border: "1px solid " + LINE, background: "oklch(0.17 0.014 265)", color: FG }}>
                 <span style={{ width: 44, height: 44, borderRadius: "50%", background: "oklch(0.62 0.15 150)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, color: "white" }}>WA</span>
@@ -738,7 +739,7 @@ export default function Landing() {
           <div style={{ flex: "1 1 140px" }}><h3 style={footHead}>LEGAL</h3><div style={{ display: "grid", gap: 10, fontSize: 15 }}><a href="/terms-of-service" style={footLink}>Terms of Service</a><a href="/privacy-policy" style={footLink}>Privacy Policy</a><a href="/refund-and-cancellation-policy" style={footLink}>Refund Policy</a></div></div>
         </div>
         <div aria-hidden style={{ textAlign: "center", fontSize: "clamp(64px,19vw,300px)", fontWeight: 800, letterSpacing: "-0.07em", lineHeight: 0.8, color: "transparent", WebkitTextStroke: "1px oklch(0.34 0.02 265)", padding: "24px 0 0", userSelect: "none", whiteSpace: "nowrap" }}>VecraHost</div>
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "20px 24px 28px", display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", fontSize: 14, color: "oklch(0.65 0.015 265)" }}><span>© 2026 VecraHost. All rights reserved.</span><span>Made in India</span></div>
+        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "20px 24px 28px", display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", fontSize: 14, color: "oklch(0.65 0.015 265)" }}><span>© 2026 VecraHost. All rights reserved.</span><span>{CITY}{WA_NUMBER && <> · <a href={telLink} style={footLink}>{phoneText}</a></>}</span></div>
       </footer>
 
       {mobile && !menuOpen && (

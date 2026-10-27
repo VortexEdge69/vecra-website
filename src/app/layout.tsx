@@ -1,4 +1,5 @@
 import "./globals.css";
+import { PHONE } from "@/lib/contact";
 import Script from "next/script";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "VecraHost provides high-performance enterprise VPS, Cloud hosting, and Domain services in India. Low latency, 99.9% uptime, and 24/7 dedicated support for mission-critical infrastructure.",
   keywords:
-    "vecrahost, enterprise vps india, cloud hosting india, high performance vps, dedicated resources, low latency hosting mumbai, business cloud servers, nvme storage hosting",
+    "vecrahost, website design india, web design vijayawada, business website, small business website, website hosting india, ecommerce website, seo",
   icons: {
     icon: "/vecraSymbol.png",
   },
@@ -47,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "Customer Support",
-                telephone: "+91-XXXXXXXXXX",
+                ...(PHONE ? { telephone: "+" + PHONE } : {}),
                 email: "support@vecrahost.in"
               }
             })
@@ -66,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               image: "https://vecrahost.in/vecraSymbol.png",
               description: "Enterprise-grade VPS and Cloud Hosting in India with 99.9% uptime SLA",
               url: "https://vecrahost.in",
-              telephone: "+91-XXXXXXXXXX",
+              ...(PHONE ? { telephone: "+" + PHONE } : {}),
               address: {
                 "@type": "PostalAddress",
                 streetAddress: "Vijayawada",

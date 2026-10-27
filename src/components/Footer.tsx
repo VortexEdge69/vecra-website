@@ -1,6 +1,7 @@
 "use client"
 import Image from "next/image";
 import Link from "next/link";
+import { PHONE, CITY, telLink, waLink, phoneText } from "@/lib/contact";
 import { useState } from "react";
 
 export default function Footer() {
@@ -260,7 +261,8 @@ export default function Footer() {
             {/* Copyright */}
             <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-brand-border">
                 <p className="text-xs text-brand-muted text-center">
-                    © {new Date().getFullYear()} VecraHost. All rights reserved.
+                    © {new Date().getFullYear()} VecraHost. All rights reserved. · {CITY}
+                    {PHONE && <> · <a href={telLink} className="hover:text-brand-primary">{phoneText}</a> · <a href={waLink("Hi VecraHost")} className="hover:text-brand-primary">WhatsApp</a></>}
                 </p>
             </div>
         </footer>

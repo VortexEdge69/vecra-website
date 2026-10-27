@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PHONE, telLink, phoneText } from "@/lib/contact";
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -21,6 +22,7 @@ export default function Navbar() {
         { name: "Websites", href: "/#services" },
         { name: "VPS Hosting", href: "/vps" },
         { name: "Web Hosting", href: "/web-hosting" },
+        { name: "Local Plan", href: "/local" },
         { name: "Domains", href: "/domains" },
         { name: "Contact", href: "/contactus" },
     ];
@@ -58,6 +60,7 @@ export default function Navbar() {
                                 {link.name}
                             </Link>
                         ))}
+                        {PHONE && <a href={telLink} className="px-4 py-2 text-sm font-medium text-brand-muted hover:text-brand-text">{phoneText}</a>}
                         <div className="w-px h-4 bg-brand-border mx-4" />
                         <a
                             href="https://portal.vecrahost.in"
