@@ -30,11 +30,13 @@ const SERVICES = [
 ];
 // ponytail: placeholder cards, replace with real projects (add an `img` field + <img> when you have screenshots)
 const WORKS = [
-  { name: "Project name", meta: "Industry · Website type", bg: SERVICES[0].c },
-  { name: "Project name", meta: "Industry · Website type", bg: SERVICES[1].c },
-  { name: "Project name", meta: "Industry · Website type", bg: SERVICES[2].c },
-  { name: "Project name", meta: "Industry · Website type", bg: SERVICES[3].c },
+  { name: "Kreedo Sports", url: "https://kreedosports.com", bg: SERVICES[0].c },
+  { name: "Mana Urban Bowl", url: "https://manaurbanbowl.com", bg: SERVICES[1].c },
+  { name: "Creative BRND", url: "https://creativebrnd.com", bg: SERVICES[2].c },
+  { name: "Consilli Drusti", url: "https://consillidrusti.com", bg: SERVICES[3].c },
 ];
+// ponytail: live screenshots via WordPress mShots (free, may be slow on first load); swap for static /public images if it matters
+const shot = (u: string) => `https://s.wordpress.com/mshots/v1/${encodeURIComponent(u)}?w=1000&h=625`;
 const STEPS = [
   { n: "01 · FREE", t: "Discovery call", d: "A free 30-minute call to understand your business, your customers and what the website needs to do." },
   { n: "02", t: "Design", d: "We design your homepage first. You give feedback before a single page is built." },
@@ -528,9 +530,12 @@ export default function Landing() {
               </div>
               {WORKS.map((w, i) => (
                 <figure key={i} data-cursor="View" style={{ flex: "none", width: "min(84vw,640px)", margin: 0, scrollSnapAlign: "start" }}>
-                  <div style={{ aspectRatio: "16 / 10", borderRadius: 22, overflow: "hidden", background: `linear-gradient(140deg, ${w.bg[0]}, ${w.bg[1]})`, border: "1px solid " + LINE }} />
+                  <a href={w.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", aspectRatio: "16 / 10", borderRadius: 22, overflow: "hidden", background: `linear-gradient(140deg, ${w.bg[0]}, ${w.bg[1]})`, border: "1px solid " + LINE }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={shot(w.url)} alt={`${w.name} website screenshot`} loading="lazy" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", display: "block" }} />
+                  </a>
                   <figcaption style={{ marginTop: 16, display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 16 }}>
-                    <div><div style={{ fontSize: 22, fontWeight: 600, letterSpacing: "-0.02em" }}>{w.name}</div><div style={{ fontSize: 15, color: "oklch(0.72 0.015 265)", marginTop: 4 }}>{w.meta}</div></div>
+                    <div><div style={{ fontSize: 22, fontWeight: 600, letterSpacing: "-0.02em" }}>{w.name}</div><div style={{ fontSize: 15, color: "oklch(0.72 0.015 265)", marginTop: 4 }}>{w.url.replace("https://", "")}</div></div>
                     <span style={{ fontFamily: MONO, fontSize: 13, color: "oklch(0.7 0.015 265)" }}>0{i + 1}</span>
                   </figcaption>
                 </figure>
