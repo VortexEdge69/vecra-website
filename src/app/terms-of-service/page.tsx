@@ -1,4 +1,11 @@
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Terms of Service | VecraHost" },
+  description: "Terms that apply when you use VecraHost website design, hosting and domain services.",
+  alternates: { canonical: "https://vecrahost.in/terms-of-service" },
+};
 import Footer from "@/components/Footer";
 
 const TermsOfService = () => {

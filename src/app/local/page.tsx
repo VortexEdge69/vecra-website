@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import { PHONE, CITY, telLink, waLink } from "@/lib/contact";
 
 export const metadata: Metadata = {
-  title: "Local Business Plan | Website for ₹499/month – VecraHost Vijayawada",
+  title: { absolute: "Local Business Plan | Website for ₹499/month – VecraHost Vijayawada" },
   description: "A free website, hosting, updates, Google Business Profile setup and a WhatsApp button for ₹499/month. Built for local shops, clinics and services in Vijayawada.",
   alternates: { canonical: "https://vecrahost.in/local" },
 };

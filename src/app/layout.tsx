@@ -70,10 +70,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               ...(PHONE ? { telephone: "+" + PHONE } : {}),
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "Vijayawada",
                 addressLocality: "Vijayawada",
-                addressRegion: "AP",
-                postalCode: "520003",
+                addressRegion: "Andhra Pradesh",
                 addressCountry: "IN"
               },
               geo: {
@@ -82,12 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 longitude: "80.6480"
               },
               areaServed: ["IN", "AP"],
-              priceRange: "₹",
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "4.8",
-                reviewCount: "150"
-              }
+              priceRange: "₹"
             })
           }}
         />
