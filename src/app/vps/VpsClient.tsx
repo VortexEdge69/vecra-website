@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Footer from "@/components/Footer";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 interface VpsPlan {
     plan_id: string;
@@ -25,7 +25,7 @@ export default function VpsClient() {
     useEffect(() => {
         const fetchPlans = async () => {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await getSupabase()
                     .from('vps_plans')
                     .select('*');
 
