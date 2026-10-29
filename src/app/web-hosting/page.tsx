@@ -1,7 +1,8 @@
 import Footer from "@/components/Footer";
 
 export const metadata = {
-    title: "Web Hosting in India | Reliable Enterprise Hosting — VecraHost",
+    title: { absolute: "Web Hosting in India | Reliable Enterprise Hosting | VecraHost" },
+    alternates: { canonical: "https://vecrahost.in/web-hosting" },
     description: "Enterprise-grade web hosting for businesses and blogs. Scalable, secure, and WordPress-optimized hosting solutions with 24/7 support. Dedicated Indian infrastructure.",
 };
 

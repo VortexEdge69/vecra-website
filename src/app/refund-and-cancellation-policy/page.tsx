@@ -1,4 +1,11 @@
 import React from 'react';
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Refund and Cancellation Policy | VecraHost" },
+  description: "Refund and cancellation terms for VecraHost website packages, hosting and domains.",
+  alternates: { canonical: "https://vecrahost.in/refund-and-cancellation-policy" },
+};
 import Footer from "@/components/Footer";
 
 const RefundPolicy = () => {

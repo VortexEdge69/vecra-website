@@ -1,7 +1,8 @@
 User-agent: *
 Allow: /
 
-# Deindex unwanted paths
+# Keep transactional, admin and API paths out of crawling.
+# To remove a page from search results, use a noindex meta tag instead.
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /checkout/
